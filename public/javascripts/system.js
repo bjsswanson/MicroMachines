@@ -78,9 +78,7 @@ function createModel( geometry, materials ) {
 
 function createCamera() {
 	var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 10000);
-	//camera.position.set( -20, 40, 20);
-	camera.position.set( -10, 20, 10);
-	camera.lookAt( scene.position );
+	camera.position.set( -20, 40, 20);
 	return camera;
 }
 
