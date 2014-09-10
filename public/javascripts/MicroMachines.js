@@ -103,13 +103,14 @@ MicroMachines.Car.prototype = function() {
 
 	//If the car collides with an obstacle then it bounces the car away with twice the velocity of the hit.
 	//If the car is in the air then it doesn't bounce.
+	//Might need more than one forward raycaster in order to prevent clipping of model. 1 forward and 2 diagonal?
 	function handleCollisions( car, obstacles) {
 		for(var i in obstacles){
 			if(forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE)){
 				if(car.floating) {
-					car.velocity.add(car.velocity.clone().negate().multiplyScalar(1));
+					car.velocity.add(car.velocity.clone().negate().multiplyScalar(1)); //This doesn't work when reversing off a table. Kills reverse velocity, should maybe inverse forward vector when reversing?
 				} else {
-					car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER));
+					car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER)); //should use Vector3.reflect here? Intersect has a face (which has a normal) which could be used for this.
 				}
 			}
 		}

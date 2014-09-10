@@ -62,11 +62,12 @@ function createCar( geometry, materials) {
 function createGround() {
 	var geometry = new THREE.PlaneGeometry( 50, 50 );
 	var material = new THREE.MeshBasicMaterial( {color: 0x999999, side: THREE.DoubleSide} );
-
 	var plane = new THREE.Mesh( geometry, material );
+	
 	plane.receiveShadow = true;
 	plane.position.set(8, -20, -10);
 	plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(90));
+
 	scene.add( plane );
 
 	return plane;
