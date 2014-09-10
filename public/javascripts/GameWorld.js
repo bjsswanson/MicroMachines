@@ -8,8 +8,8 @@ var groundMeshes = [createGround()];
 var obstacles = [];
 
 var jsonLoader = new THREE.JSONLoader();
-jsonLoader.load( "/models/table/table.json", createTable );
 jsonLoader.load( "/models/buggy/buggy.json", createCar );
+jsonLoader.load( "/models/table/table.json", createTable );
 
 animate();
 

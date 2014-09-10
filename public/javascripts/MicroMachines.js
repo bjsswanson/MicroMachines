@@ -74,13 +74,14 @@ MicroMachines.Car.prototype = function() {
 			handleInput( this );
 		},
 
-		// This only checks if the center of the mesh is in view, not the whole mesh.
+		// This only checks if the center of the mesh is in view, not the whole mesh
 		isVisible: function( camera ) {
 			var frustum = new THREE.Frustum();
 			frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
 			return frustum.containsPoint(mesh.position);
 		},
 
+		//Everything needed in the update cycle for the car should go here
 		update: function (groundMeshes, obstacles) {
 			var car = this;
 
@@ -100,11 +101,13 @@ MicroMachines.Car.prototype = function() {
 		}
 	}
 
+	//If the car collides with an obstacle then it bounces the car away with twice the velocity of the hit.
+	//If the car is in the air then it doesn't bounce.
 	function handleCollisions( car, obstacles) {
 		for(var i in obstacles){
 			if(forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE)){
 				if(car.floating) {
-					car.velocity.add(car.velocity.clone().negate().multiplyScalar(0));
+					car.velocity.add(car.velocity.clone().negate().multiplyScalar(1));
 				} else {
 					car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER));
 				}
@@ -112,10 +115,12 @@ MicroMachines.Car.prototype = function() {
 		}
 	}
 
+	//Add drag every update
 	function handleDrag( car ) {
 		car.velocity.sub( car.velocity.clone().multiplyScalar(car.drag) );
 	}
 
+	//Checks whether car is on the ground and adds gravity if not
 	var handleGround = function( car, updateVelocity, groundMeshes ) {
 		var onGround = false;
 		for (var i in groundMeshes) {
@@ -134,6 +139,7 @@ MicroMachines.Car.prototype = function() {
 		}
 	};
 
+	//Adds forward and back forces as well as turning the car
 	function handleInputForce( car ) {
 		if(car.input.forward) {
 			car.velocity.add(car.forward.clone().multiplyScalar(car.speed));
@@ -174,6 +180,7 @@ MicroMachines.Car.prototype = function() {
 		return false;
 	};
 
+	//temporary keyboard input. This will probably not work with multiple cars
 	function handleInput( car ) {
 
 		document.onkeydown = function (e) {
