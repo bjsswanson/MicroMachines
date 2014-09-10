@@ -29,7 +29,7 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | Waypoints | If Cars go off screen, we need to be able to tell where to reset them | N |
 | Camera | Where does the camera look (Lead Car? Average Position of all cars? | N |
 | Website Interface | | N |
-|  Logins | Player names | N | 
+| Logins | Player names | N | 
 
 ### Additional Tasks
 
