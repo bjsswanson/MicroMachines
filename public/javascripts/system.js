@@ -3,9 +3,9 @@ var camera = createCamera();
 var renderer = createRenderer();
 var light  = createLight();
 
-var car;
-var table;
-var ground = createGround();
+var cars = [];
+var groundMeshes = [createGround()];
+var obstacles = [];
 
 var jsonLoader = new THREE.JSONLoader();
 jsonLoader.load( "/models/table/table.json", createTable );
@@ -14,45 +14,22 @@ jsonLoader.load( "/models/buggy/buggy.json", createCar );
 animate();
 
 function update() {
-	if(car != undefined && table != undefined){
-		camera.lookAt(car.mesh.position);
-		car.update([ground, table], [table]);
+	for(var i in cars){
+		cars[i].update(groundMeshes, obstacles);
 	}
-}
 
-
-function visible( mesh ) {
-	var frustum = new THREE.Frustum();
-	frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
-	return frustum.containsPoint(mesh.position); // This only checks if the center of the mesh is in view, not the whole mesh.
+	if(cars.length > 0){
+		camera.lookAt(cars[0].getPosition()); //this needs to work with multiple cars
+		for(var i in obstacles){
+			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
+		}
+	}
 }
 
 function animate() {
 	requestAnimationFrame( animate );
 	update();
 	renderer.render(scene, camera);
-}
-
-function transparentTable(){
-	if(car != undefined){
-		var direction = car.mesh.position.clone().sub(camera.position).normalize();
-		var distance = car.mesh.position.distanceTo(camera.position);
-		var raycaster = new THREE.Raycaster(camera.position, direction);
-
-		var intersects = raycaster.intersectObject(table.mesh);
-		if (intersects.length > 0) {
-			if (distance > intersects[0].distance) {
-				//console.log("behind");
-				table.mesh.material.materials[0].opacity = 0.5;
-			} else {
-				//console.log("front");
-				table.mesh.material.materials[0].opacity = 1;
-			}
-		} else {
-			table.mesh.material.materials[0].opacity = 1;
-		}
-
-	}
 }
 
 function createTable( geometry, materials ) {
@@ -64,21 +41,22 @@ function createTable( geometry, materials ) {
 	mesh.material.transparent = true;
 	mesh.material.materials[0].transparent = true
 
-	scene.add(mesh);
-	table = mesh;
+	var table = new MicroMachines.Obstacle( mesh );
+	scene.add(table.mesh);
+
+	groundMeshes.push( table.mesh );
+	obstacles.push( table );
 }
 
 function createCar( geometry, materials) {
 	var mesh = createModel( geometry, materials, 1);
 	mesh.scale.set(0.5,0.5, 0.5);
 	mesh.position.set(10, 0, -20);
-	mesh.castShadow = true;
-	mesh.receiveShadow = true;
-
 	scene.add(mesh);
 
-	car = new MicroMachines.Car( mesh );
+	var car = new MicroMachines.Car( mesh );
 	car.init();
+	cars.push(car);
 }
 
 function createGround() {
@@ -134,19 +112,19 @@ function onWindowResize() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-function drawLine( raycaster ) {
-	var material = new THREE.LineBasicMaterial({
-		color: 0x0000ff
-	});
-
-	var geometry = new THREE.Geometry();
-
-	var origin = raycaster.ray.origin;
-	var direction = raycaster.ray.direction;
-
-	geometry.vertices.push(origin);
-	geometry.vertices.push(_vector3.addVectors(origin, direction));
-	var line = new THREE.Line(geometry, material);
-
-	scene.add(line);
-}
+//function drawLine( raycaster ) {
+//	var material = new THREE.LineBasicMaterial({
+//		color: 0x0000ff
+//	});
+//
+//	var geometry = new THREE.Geometry();
+//
+//	var origin = raycaster.ray.origin;
+//	var direction = raycaster.ray.direction;
+//
+//	geometry.vertices.push(origin);
+//	geometry.vertices.push(_vector3.addVectors(origin, direction));
+//	var line = new THREE.Line(geometry, material);
+//
+//	scene.add(line);
+//}

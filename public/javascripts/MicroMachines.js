@@ -2,6 +2,7 @@ var MicroMachines = window.MicroMachines || {};
 
 var UP = new THREE.Vector3(0, 1, 0);
 var DOWN = new THREE.Vector3(0, -1, 0);
+var FORWARD = new THREE.Vector3(0, 0, 1);
 var MIN_VELOCITY = new THREE.Vector3(-1, -1, -1);
 var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
@@ -10,13 +11,15 @@ var GROUND_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
 var FLOAT_DRAG = 0.02;
 var TURN_ANGLE = 2;
-var COLLIDE_DISTANCE = 0.3;
+var COLLIDE_DISTANCE = 0.8;
 var COLLISION_MULTIPLIER = 2;
 
 MicroMachines.Car = function ( mesh ) {
 	this.mesh = mesh;
+	this.mesh.castShadow = true;
+	this.mesh.receiveShadow = true;
 
-	this.forward = new THREE.Vector3(0, 0, 1);
+	this.forward = FORWARD.clone();
 	this.velocity = new THREE.Vector3();
 
 	this.fowardRaycaster = new THREE.Raycaster(mesh.position, this.forward);
@@ -40,6 +43,10 @@ MicroMachines.Car.prototype = function() {
 
 		constructor: MicroMachines.Car,
 
+		getPosition: function() {
+			return this.mesh.position;
+		},
+
 		setPosition: function (x, y, z) {
 			this.mesh.position.x = x;
 			this.mesh.position.y = y;
@@ -48,25 +55,33 @@ MicroMachines.Car.prototype = function() {
 			return this;
 		},
 
-		setRotation: function (x, y, z) {
-			this.mesh.rotation.x = x;
-			this.mesh.rotation.y = y;
-			this.mesh.rotation.z = z;
-
+		setRotation: function ( angle ) {
+			this.mesh.rotation.x = 0;
+			this.mesh.rotation.y = 0;
+			this.mesh.rotation.z = 0;
+			this.mesh.rotateOnAxis(UP, THREE.Math.degToRad( angle ));
+			this.forward = FORWARD.clone();
+			this.forward.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( angle )));
 			return this;
 		},
 
 		reset: function (x, y, z) {
 			this.setPosition(x, y, z);
-			this.setRotation(0, 0, 0);
-			this.forward = new THREE.Vector3(0, 0, 1);
+			this.setRotation( 0 );
 		},
 
 		init: function(){
 			handleInput( this );
 		},
 
-		update: function (groundMeshes, obstacleMeshes) {
+		// This only checks if the center of the mesh is in view, not the whole mesh.
+		isVisible: function( camera ) {
+			var frustum = new THREE.Frustum();
+			frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
+			return frustum.containsPoint(mesh.position);
+		},
+
+		update: function (groundMeshes, obstacles) {
 			var car = this;
 
 			var updateVelocity = new THREE.Vector3();
@@ -76,7 +91,7 @@ MicroMachines.Car.prototype = function() {
 				handleInputForce( car );
 			}
 
-			handleCollisions(car, obstacleMeshes );
+			handleCollisions(car, obstacles );
 			handleDrag( car );
 
 			car.velocity.clamp(MIN_VELOCITY, MAX_VELOCITY);
@@ -85,10 +100,14 @@ MicroMachines.Car.prototype = function() {
 		}
 	}
 
-	function handleCollisions( car, obstacleMeshes ) {
-		for(var i in obstacleMeshes){
-			if(forwardCollide(car, obstacleMeshes[i], COLLIDE_DISTANCE)){
-				car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER));
+	function handleCollisions( car, obstacles) {
+		for(var i in obstacles){
+			if(forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE)){
+				if(car.floating) {
+					car.velocity.add(car.velocity.clone().negate().multiplyScalar(0));
+				} else {
+					car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER));
+				}
 			}
 		}
 	}
@@ -190,6 +209,46 @@ MicroMachines.Car.prototype = function() {
 					break;
 			}
 		};
+	}
+
+	return expose;
+}();
+
+
+MicroMachines.Obstacle = function ( mesh ) {
+	this.mesh = mesh;
+	this.cameraRaycaster = new THREE.Raycaster();
+};
+
+MicroMachines.Obstacle.prototype = function(){
+	var expose = {
+		constructor: MicroMachines.Obstacle,
+
+		update: function( camera, car ) {
+			var obstacle = this;
+			transparent( obstacle, camera, car );
+		}
+	}
+
+	function transparent( obstacle, camera, car ) {
+		obstacle.cameraRaycaster.ray.origin = camera.position;
+		obstacle.cameraRaycaster.ray.direction = car.getPosition().clone().sub(camera.position).normalize();
+
+		var distance = car.getPosition().distanceTo(camera.position);
+		var intersects = obstacle.cameraRaycaster.intersectObject(obstacle.mesh);
+		if (intersects.length > 0) {
+			if (distance > intersects[0].distance) {
+				setOpacity(obstacle, 0.5);
+			} else {
+				setOpacity(obstacle, 1);
+			}
+		} else {
+			setOpacity(obstacle, 1);
+		}
+	}
+
+	function setOpacity( obstacle, opacity) {
+		obstacle.mesh.material.materials[0].opacity = opacity;
 	}
 
 	return expose;
