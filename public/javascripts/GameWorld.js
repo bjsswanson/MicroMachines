@@ -13,6 +13,12 @@ jsonLoader.load( "/models/table/table.json", createTable );
 
 animate();
 
+function animate() {
+	requestAnimationFrame( animate );
+	update();
+	renderer.render(scene, camera);
+}
+
 function update() {
 	for(var i in cars){
 		cars[i].update(surfaces, obstacles);
@@ -24,12 +30,6 @@ function update() {
 			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
 		}
 	}
-}
-
-function animate() {
-	requestAnimationFrame( animate );
-	update();
-	renderer.render(scene, camera);
 }
 
 function createTable( geometry, materials ) {
@@ -109,20 +109,3 @@ function onWindowResize() {
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
-
-//function drawLine( raycaster ) {
-//	var material = new THREE.LineBasicMaterial({
-//		color: 0x0000ff
-//	});
-//
-//	var geometry = new THREE.Geometry();
-//
-//	var origin = raycaster.ray.origin;
-//	var direction = raycaster.ray.direction;
-//
-//	geometry.vertices.push(origin);
-//	geometry.vertices.push(_vector3.addVectors(origin, direction));
-//	var line = new THREE.Line(geometry, material);
-//
-//	scene.add(line);
-//}

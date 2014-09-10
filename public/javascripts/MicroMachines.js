@@ -13,6 +13,7 @@ var FLOAT_DRAG = 0.02;
 var TURN_ANGLE = 2;
 var COLLIDE_DISTANCE = 0.8;
 var COLLISION_MULTIPLIER = 2;
+var RESET_HEIGHT = -50;
 
 MicroMachines.Car = function ( mesh ) {
 	this.mesh = mesh;
@@ -81,7 +82,7 @@ MicroMachines.Car.prototype = function() {
 			return frustum.containsPoint(mesh.position);
 		},
 
-		//Everything needed in the update cycle for the car should go here
+		//Everything needed in the update cycle for a car should go here
 		update: function (surfaces, obstacles) {
 			var car = this;
 
@@ -108,7 +109,8 @@ MicroMachines.Car.prototype = function() {
 		for(var i in obstacles){
 			if(forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE)){
 				if(car.floating) {
-					car.velocity.add(car.velocity.clone().negate().multiplyScalar(1)); //This doesn't work when reversing off a table. Kills reverse velocity, should maybe inverse forward vector when reversing?
+					car.velocity.add(car.velocity.clone().negate().multiplyScalar(1)); //This doesn't work when reversing off a table. Kills reverse velocity,
+																						// should maybe inverse forward vector when reversing (would allow collision detection in reverse using same raycaster)?
 				} else {
 					car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER)); //should use Vector3.reflect here? Intersect has a face (which has a normal) which could be used for this.
 				}
@@ -117,6 +119,7 @@ MicroMachines.Car.prototype = function() {
 	}
 
 	//Checks whether car is on a surface and adds gravity if not
+	//Currently doesn't handle ramps (would need to maintain distance from surface for ramps)
 	function handleSurfaces( car, updateVelocity, surfaces ) {
 		var onSurface = false;
 		for (var i in surfaces) {
@@ -238,6 +241,8 @@ MicroMachines.Obstacle.prototype = function(){
 		}
 	}
 
+	//Makes obstacle go transparent if it obstructs the view of a car
+	//Needs updating to support multiple cars.
 	function transparent( obstacle, camera, car ) {
 		obstacle.cameraRaycaster.ray.origin = camera.position;
 		obstacle.cameraRaycaster.ray.direction = car.getPosition().clone().sub(camera.position).normalize();
