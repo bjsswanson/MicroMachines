@@ -28,7 +28,8 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | Gameplay | Who's winning, are cars off screen? | N |
 | Waypoints | If Cars go off screen, we need to be able to tell where to reset them | N |
 | Camera | Where does the camera look (Lead Car? Average Position of all cars? | N |
-| Website Interface, Logins | | N |
+| Website Interface | | N |
+|  Logins | Player names | N | 
 
 ### Additional Tasks
 
@@ -41,3 +42,4 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | Loading/Preloading | 3D models and images | N |
 | 1,2,3,Go | Prevent race start until all ready | N |
 | Obstacle movement | (TweenJS) e.g. Pool table where balls move | N |
+| High Scores | Leaderboards | N |
