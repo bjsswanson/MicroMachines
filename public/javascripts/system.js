@@ -1,162 +1,30 @@
-var _vector3 = new THREE.Vector3()
-var gravity = new THREE.Vector3(0, -0.25, 0);
-var inputForce = new THREE.Vector3(0, 0, 0);
-var forward = new THREE.Vector3(0, 0, 1);
-var down = new THREE.Vector3(0, -1, 0);
-
-var forwardPress = false;
-var backPress = false;
-var leftPress = false;
-var rightPress = false;
-
-var floating = true;
-var dragCoefficient = 0.05;
-
 var scene = new THREE.Scene();
 var camera = createCamera();
 var renderer = createRenderer();
 var light  = createLight();
-var ground = createGround();
 
 var car;
 var table;
+var ground = createGround();
 
 var jsonLoader = new THREE.JSONLoader();
 jsonLoader.load( "/models/table/table.json", createTable );
 jsonLoader.load( "/models/buggy/buggy.json", createCar );
 
-keybind();
 animate();
 
-function resetCar() {
-	car.mesh.position.set(10, 0, -20);
-	car.mesh.rotation.x = 0;
-	car.mesh.rotation.y = 0;
-	car.mesh.rotation.z = 0;
-	forward = new THREE.Vector3(0, 0, 1);
-}
 function update() {
-	var forces = new THREE.Vector3();
-	forces.add(gravity);
-
 	if(car != undefined && table != undefined){
 		camera.lookAt(car.mesh.position);
-		transparentTable();
-
-		var tCollide = collide( car.groundRaycaster, table.mesh );
-		var gCollide = collide( car.groundRaycaster, ground );
-
-		if(tCollide || gCollide) {
-			forces.add(gravity.clone().negate())
-			floating = false;
-			dragCoefficient = 0.05;
-		} else {
-			floating = true;
-			dragCoefficient = 0.02;
-		}
-
-		if(!floating) {
-			if(forwardPress) {
-				inputForce.add(forward.clone().multiplyScalar(0.02));
-			}
-
-			if(backPress) {
-				inputForce.add(forward.clone().multiplyScalar(-0.02));
-			}
-
-			if(leftPress) {
-				var axis = new THREE.Vector3( 0, 1, 0 );
-				var angle = THREE.Math.degToRad(2);
-				car.mesh.rotateOnAxis(axis, angle);
-				var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
-				forward.applyMatrix4( matrix );
-			}
-
-			if(rightPress) {
-				var axis = new THREE.Vector3( 0, 1, 0 );
-				var angle = THREE.Math.degToRad(-2);
-				car.mesh.rotateOnAxis(axis, angle);
-				var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
-				forward.applyMatrix4( matrix );
-			}
-		}
-
-		var fCollide = collide( car.forwardRaycaster, table.mesh);
-		if(fCollide) {
-			inputForce.add(inputForce.clone().negate().multiplyScalar(2));
-		}
-
-		if(car.mesh.position.y < -50) {
-			resetCar();
-		}
-
-		var drag = inputForce.clone().multiplyScalar(dragCoefficient);
-
-		inputForce.sub(drag);
-		inputForce.clamp(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
-
-		forces.add(inputForce);
-		car.mesh.position.add(forces);
+		car.update([ground, table], [table]);
 	}
 }
 
-function collide( raycaster, mesh ) {
-	var intersects = raycaster.intersectObject(mesh);
-	if (intersects.length > 0) {
-		if (intersects[0].distance < 0.3) {
-			return true;
-		}
-	}
-
-	return false;
-}
 
 function visible( mesh ) {
 	var frustum = new THREE.Frustum();
 	frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
 	return frustum.containsPoint(mesh.position); // This only checks if the center of the mesh is in view, not the whole mesh.
-}
-
-function keybind(){
-	document.onkeydown = function(e) {
-		switch (e.keyCode) {
-			case 37:
-				leftPress = true;
-				break;
-			case 38:
-				forwardPress = true;
-				break;
-			case 39:
-				rightPress = true;
-				break;
-			case 40:
-				backPress = true;
-				break;
-			case 82:
-				resetCar();
-				break;
-		}
-	};
-
-	document.onkeyup = function(e) {
-		switch (e.keyCode) {
-			case 37:
-				leftPress = false;
-				break;
-			case 38:
-				forwardPress = false;
-				break;
-			case 39:
-				rightPress = false;
-				break;
-			case 40:
-				backPress = false;
-				break;
-		}
-	};
-
-
-
 }
 
 function animate() {
@@ -197,10 +65,7 @@ function createTable( geometry, materials ) {
 	mesh.material.materials[0].transparent = true
 
 	scene.add(mesh);
-
-	table = {
-		mesh: mesh
-	};
+	table = mesh;
 }
 
 function createCar( geometry, materials) {
@@ -212,13 +77,8 @@ function createCar( geometry, materials) {
 
 	scene.add(mesh);
 
-	car = {
-		mesh: mesh,
-		groundRaycaster: new THREE.Raycaster(mesh.position, down),
-		forwardRaycaster: new THREE.Raycaster(mesh.position, forward)
-	}
-
-	//drawLine(car.groundRaycaster);
+	car = new MicroMachines.Car( mesh );
+	car.init();
 }
 
 function createGround() {
