@@ -7,7 +7,7 @@ var MIN_VELOCITY = new THREE.Vector3(-1, -1, -1);
 var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 var DEFAULT_SPEED = 0.02;
-var GROUND_DISTANCE = 0.3;
+var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
 var FLOAT_DRAG = 0.02;
 var TURN_ANGLE = 2;
@@ -82,11 +82,11 @@ MicroMachines.Car.prototype = function() {
 		},
 
 		//Everything needed in the update cycle for the car should go here
-		update: function (groundMeshes, obstacles) {
+		update: function (surfaces, obstacles) {
 			var car = this;
 
 			var updateVelocity = new THREE.Vector3();
-			handleGround(car, updateVelocity, groundMeshes);
+			handleSurfaces(car, updateVelocity, surfaces);
 
 			if (!car.floating) {
 				handleInputForce( car );
@@ -116,21 +116,16 @@ MicroMachines.Car.prototype = function() {
 		}
 	}
 
-	//Add drag every update
-	function handleDrag( car ) {
-		car.velocity.sub( car.velocity.clone().multiplyScalar(car.drag) );
-	}
-
-	//Checks whether car is on the ground and adds gravity if not
-	var handleGround = function( car, updateVelocity, groundMeshes ) {
-		var onGround = false;
-		for (var i in groundMeshes) {
-			if (downCollide(car, groundMeshes[i], GROUND_DISTANCE)) {
-				onGround = true;
+	//Checks whether car is on a surface and adds gravity if not
+	function handleSurfaces( car, updateVelocity, surfaces ) {
+		var onSurface = false;
+		for (var i in surfaces) {
+			if (downCollide(car, surfaces[i].mesh, SURFACE_DISTANCE)) {
+				onSurface = true;
 			}
 		}
 
-		if (onGround) {
+		if (onSurface) {
 			car.floating = false;
 			car.drag = DEFAULT_DRAG;
 		} else {
@@ -139,6 +134,11 @@ MicroMachines.Car.prototype = function() {
 			car.drag = FLOAT_DRAG;
 		}
 	};
+
+	//Add drag every update
+	function handleDrag( car ) {
+		car.velocity.sub( car.velocity.clone().multiplyScalar(car.drag) );
+	}
 
 	//Adds forward and back forces as well as turning the car
 	function handleInputForce( car ) {
@@ -257,6 +257,18 @@ MicroMachines.Obstacle.prototype = function(){
 
 	function setOpacity( obstacle, opacity) {
 		obstacle.mesh.material.materials[0].opacity = opacity;
+	}
+
+	return expose;
+}();
+
+MicroMachines.Surface = function ( mesh ) {
+	this.mesh = mesh;
+};
+
+MicroMachines.Surface.prototype = function(){
+	var expose = {
+		constructor: MicroMachines.Surface
 	}
 
 	return expose;

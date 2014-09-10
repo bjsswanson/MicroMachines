@@ -4,7 +4,7 @@ var renderer = createRenderer();
 var light  = createLight();
 
 var cars = [];
-var groundMeshes = [createGround()];
+var surfaces = [createGround()];
 var obstacles = [];
 
 var jsonLoader = new THREE.JSONLoader();
@@ -15,7 +15,7 @@ animate();
 
 function update() {
 	for(var i in cars){
-		cars[i].update(groundMeshes, obstacles);
+		cars[i].update(surfaces, obstacles);
 	}
 
 	if(cars.length > 0){
@@ -41,11 +41,10 @@ function createTable( geometry, materials ) {
 	mesh.material.transparent = true;
 	mesh.material.materials[0].transparent = true
 
-	var table = new MicroMachines.Obstacle( mesh );
-	scene.add(table.mesh);
+	scene.add(mesh);
 
-	groundMeshes.push( table.mesh );
-	obstacles.push( table );
+	surfaces.push( new MicroMachines.Surface( mesh ) );
+	obstacles.push( new MicroMachines.Obstacle( mesh ));
 }
 
 function createCar( geometry, materials) {
@@ -63,14 +62,14 @@ function createGround() {
 	var geometry = new THREE.PlaneGeometry( 50, 50 );
 	var material = new THREE.MeshBasicMaterial( {color: 0x999999, side: THREE.DoubleSide} );
 	var plane = new THREE.Mesh( geometry, material );
-	
+
 	plane.receiveShadow = true;
 	plane.position.set(8, -20, -10);
 	plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(90));
 
 	scene.add( plane );
 
-	return plane;
+	return new MicroMachines.Surface( plane );
 }
 
 function createModel( geometry, materials ) {
