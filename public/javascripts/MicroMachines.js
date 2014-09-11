@@ -165,17 +165,13 @@ MicroMachines.Car.prototype = function() {
 
 	function collide(raycaster, mesh, distance) {
 		var intersects = raycaster.intersectObject(mesh);
-		var closestIntersect;
 		if (intersects.length > 0) {
 			for(var i in intersects) {
 				if (intersects[i].distance <= distance) {
-					if(closestIntersect == undefined || intersects[i].distance < closestIntersect.distance) {
-						closestIntersect = intersects[i];
-					}
+					return intersects[0];
 				}
 			}
 		}
-		return closestIntersect;
 	};
 
 	//temporary keyboard input. This will probably not work with multiple cars
