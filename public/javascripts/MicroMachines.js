@@ -6,6 +6,7 @@ var FORWARD = new THREE.Vector3(0, 0, 1);
 var MIN_VELOCITY = new THREE.Vector3(-1, -1, -1);
 var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
+
 var DEFAULT_SPEED = 0.02;
 var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
@@ -20,11 +21,13 @@ MicroMachines.Car = function ( mesh ) {
 	this.mesh.castShadow = true;
 	this.mesh.receiveShadow = true;
 
+	this.position = mesh.position;
 	this.forward = FORWARD.clone();
 	this.velocity = new THREE.Vector3();
 
-	this.fowardRaycaster = new THREE.Raycaster(mesh.position, this.forward);
-	this.downRaycaster = new THREE.Raycaster(mesh.position, DOWN);
+	//Be careful when updating raycasters because set changes the original values through the pointer.
+	this.fowardRaycaster = new THREE.Raycaster(this.position, this.forward);
+	this.downRaycaster = new THREE.Raycaster(this.position, DOWN);
 
 	this.floating = true;
 	this.speed = DEFAULT_SPEED;
@@ -32,7 +35,6 @@ MicroMachines.Car = function ( mesh ) {
 
 	this.input = {
 		forward: false,
-		backwards: false,
 		left: false,
 		right: false
 	}
@@ -43,18 +45,6 @@ MicroMachines.Car.prototype = function() {
 	var expose = {
 
 		constructor: MicroMachines.Car,
-
-		getPosition: function() {
-			return this.mesh.position;
-		},
-
-		setPosition: function (x, y, z) {
-			this.mesh.position.x = x;
-			this.mesh.position.y = y;
-			this.mesh.position.z = z;
-
-			return this;
-		},
 
 		setRotation: function ( angle ) {
 			this.mesh.rotation.x = 0;
@@ -67,7 +57,7 @@ MicroMachines.Car.prototype = function() {
 		},
 
 		reset: function (x, y, z) {
-			this.setPosition(x, y, z);
+			this.position.set(x, y, z);
 			this.setRotation( 0 );
 		},
 
@@ -107,15 +97,19 @@ MicroMachines.Car.prototype = function() {
 	//Might need more than one forward raycaster in order to prevent clipping of model. 1 forward and 2 diagonal?
 	function handleCollisions( car, obstacles) {
 		for(var i in obstacles){
-			if(forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE)){
-				if(car.floating) {
-					car.velocity.add(car.velocity.clone().negate().multiplyScalar(1)); //This doesn't work when reversing off a table. Kills reverse velocity,
-																						// should maybe inverse forward vector when reversing (would allow collision detection in reverse using same raycaster)?
+			var intersect = forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE);
+			if(intersect){
+				if(car.floating){
+					car.velocity.add(intersect.face.normal.clone().multiply(absoluteVector(car.velocity)));
 				} else {
-					car.velocity.add(car.velocity.clone().negate().multiplyScalar(COLLISION_MULTIPLIER)); //should use Vector3.reflect here? Intersect has a face (which has a normal) which could be used for this.
+					car.velocity.add(intersect.face.normal.clone().multiply(absoluteVector(car.velocity).multiplyScalar(COLLISION_MULTIPLIER)));
 				}
 			}
 		}
+	}
+
+	function absoluteVector( v ) {
+		return new THREE.Vector3(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z))
 	}
 
 	//Checks whether car is on a surface and adds gravity if not
@@ -123,7 +117,8 @@ MicroMachines.Car.prototype = function() {
 	function handleSurfaces( car, updateVelocity, surfaces ) {
 		var onSurface = false;
 		for (var i in surfaces) {
-			if (downCollide(car, surfaces[i].mesh, SURFACE_DISTANCE)) {
+			var intersect = downCollide(car, surfaces[i].mesh, SURFACE_DISTANCE);
+			if (intersect) {
 				onSurface = true;
 			}
 		}
@@ -149,10 +144,6 @@ MicroMachines.Car.prototype = function() {
 			car.velocity.add(car.forward.clone().multiplyScalar(car.speed));
 		}
 
-		if(car.input.backwards) {
-			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed));
-		}
-
 		if(car.input.left) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad( TURN_ANGLE ));
 			car.forward.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( TURN_ANGLE )));
@@ -174,14 +165,17 @@ MicroMachines.Car.prototype = function() {
 
 	function collide(raycaster, mesh, distance) {
 		var intersects = raycaster.intersectObject(mesh);
+		var closestIntersect;
 		if (intersects.length > 0) {
 			for(var i in intersects) {
 				if (intersects[i].distance <= distance) {
-					return true;
+					if(closestIntersect == undefined || intersects[i].distance < closestIntersect.distance) {
+						closestIntersect = intersects[i];
+					}
 				}
 			}
 		}
-		return false;
+		return closestIntersect;
 	};
 
 	//temporary keyboard input. This will probably not work with multiple cars
@@ -198,9 +192,6 @@ MicroMachines.Car.prototype = function() {
 				case 39:
 					car.input.right = true;
 					break;
-				case 40:
-					car.input.backwards = true;
-					break;
 			}
 		};
 
@@ -215,9 +206,7 @@ MicroMachines.Car.prototype = function() {
 				case 39:
 					car.input.right = false;
 					break;
-				case 40:
-					car.input.backwards = false;
-					break;
+
 			}
 		};
 	}
@@ -245,9 +234,9 @@ MicroMachines.Obstacle.prototype = function(){
 	//Needs updating to support multiple cars.
 	function transparent( obstacle, camera, car ) {
 		obstacle.cameraRaycaster.ray.origin = camera.position;
-		obstacle.cameraRaycaster.ray.direction = car.getPosition().clone().sub(camera.position).normalize();
+		obstacle.cameraRaycaster.ray.direction = car.position.clone().sub(camera.position).normalize();
 
-		var distance = car.getPosition().distanceTo(camera.position);
+		var distance = car.position.distanceTo(camera.position);
 		var intersects = obstacle.cameraRaycaster.intersectObject(obstacle.mesh);
 		if (intersects.length > 0) {
 			if (distance > intersects[0].distance) {

@@ -25,7 +25,7 @@ function update() {
 	}
 
 	if(cars.length > 0){
-		camera.lookAt(cars[0].getPosition()); //this needs to work with multiple cars
+		camera.lookAt(cars[0].position); //this needs to work with multiple cars
 		for(var i in obstacles){
 			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
 		}
@@ -78,7 +78,7 @@ function createModel( geometry, materials ) {
 
 function createCamera() {
 	var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 10000);
-	camera.position.set( -20, 40, 20);
+	camera.position.set( -10, 20, 10);
 	return camera;
 }
 
