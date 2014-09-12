@@ -12,9 +12,10 @@ var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
 var FLOAT_DRAG = 0.02;
 var TURN_ANGLE = 2;
-var COLLIDE_DISTANCE = 0.8;
-var COLLISION_MULTIPLIER = 2;
-var RESET_HEIGHT = -50;
+var DAMPEN = 0.5;
+var TRANSPARENT = 0.5;
+var SOLID = 1;
+var COLLISION_CHECK_DISTANCE = 50;
 
 MicroMachines.Car = function ( mesh ) {
 	this.mesh = mesh;
@@ -26,7 +27,13 @@ MicroMachines.Car = function ( mesh ) {
 	this.velocity = new THREE.Vector3();
 
 	//Be careful when updating raycasters because set changes the original values through the pointer.
-	this.fowardRaycaster = new THREE.Raycaster(this.position, this.forward);
+	this.colliders = [
+		{ angle: 0, distance: 1, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: 45, distance: 0.6, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: -45, distance: 0.6, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: 180, distance: 1, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) }
+	]
+
 	this.downRaycaster = new THREE.Raycaster(this.position, DOWN);
 
 	this.floating = true;
@@ -35,6 +42,7 @@ MicroMachines.Car = function ( mesh ) {
 
 	this.input = {
 		forward: false,
+		backwards: false,
 		left: false,
 		right: false
 	}
@@ -92,17 +100,25 @@ MicroMachines.Car.prototype = function() {
 		}
 	}
 
-	//If the car collides with an obstacle then it bounces the car away with twice the velocity of the hit.
-	//If the car is in the air then it doesn't bounce.
-	//Might need more than one forward raycaster in order to prevent clipping of model. 1 forward and 2 diagonal?
+	//Using intersect face normal to create more realistic collision when colliding at an angle (might be further improved with Vector3.reflect)
+	//May need to rule out some far away objects first with distance check, no need to raycast against objects that aren't nearby
 	function handleCollisions( car, obstacles) {
-		for(var i in obstacles){
-			var intersect = forwardCollide(car, obstacles[i].mesh, COLLIDE_DISTANCE);
-			if(intersect){
-				if(car.floating){
-					car.velocity.add(intersect.face.normal.clone().multiply(absoluteVector(car.velocity)));
-				} else {
-					car.velocity.add(intersect.face.normal.clone().multiply(absoluteVector(car.velocity).multiplyScalar(COLLISION_MULTIPLIER)));
+		for(var i in obstacles) {
+			if (car.position.distanceTo(obstacles[i].position) < COLLISION_CHECK_DISTANCE) { //No need to check against far away objects (Although this needs to take into account large objects)
+				var intersect = forwardCollide(car, obstacles[i].mesh);
+				if (intersect) {
+					var velocity = car.velocity.clone(); // Take the current velocity
+
+					var normalVelocity = intersect.face.normal.clone(); //Create a vector in the direction of the normal
+					normalVelocity.multiply(absoluteVector(car.velocity));  //with the length (speed) of the current velocity
+
+					var result = velocity.add(normalVelocity); // Add the current velocity to the normal velocity
+					result.normalize(); // Normalize the result (length of 1)
+					result.multiplyScalar(car.velocity.length()); // Make the result the same length (speed) as the original car velocity
+					result.multiplyScalar(DAMPEN); //Dampen the resulting vector - Problem with intersection
+					result.add(intersect.face.normal.clone().multiplyScalar(0.1)); //Add a little bit in case velocity was zero. (Prevents intersection better)
+
+					car.velocity.copy(result); // Set the car's velocity to the result
 				}
 			}
 		}
@@ -144,6 +160,10 @@ MicroMachines.Car.prototype = function() {
 			car.velocity.add(car.forward.clone().multiplyScalar(car.speed));
 		}
 
+		if(car.input.backwards) {
+			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed * 0.5));
+		}
+
 		if(car.input.left) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad( TURN_ANGLE ));
 			car.forward.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( TURN_ANGLE )));
@@ -159,8 +179,20 @@ MicroMachines.Car.prototype = function() {
 		return collide(car.downRaycaster, mesh, distance);
 	};
 
-	function forwardCollide(car, mesh, distance) {
-		return collide(car.fowardRaycaster, mesh, distance);
+	function forwardCollide(car, mesh) {
+		for(var i in car.colliders) {
+			var collider = car.colliders[i];
+			var raycaster = collider.raycaster;
+			var clone = car.forward.clone();
+
+			//Update raycaster with current forward vector
+			raycaster.set(car.position, clone.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( collider.angle ))));
+
+			var intersect = collide(raycaster, mesh, collider.distance);
+			if(intersect) {
+				return intersect;
+			}
+		}
 	};
 
 	function collide(raycaster, mesh, distance) {
@@ -188,6 +220,9 @@ MicroMachines.Car.prototype = function() {
 				case 39:
 					car.input.right = true;
 					break;
+				case 40:
+					car.input.backwards = true;
+					break;
 			}
 		};
 
@@ -202,7 +237,9 @@ MicroMachines.Car.prototype = function() {
 				case 39:
 					car.input.right = false;
 					break;
-
+				case 40:
+					car.input.backwards = false;
+					break;
 			}
 		};
 	}
@@ -213,6 +250,8 @@ MicroMachines.Car.prototype = function() {
 
 MicroMachines.Obstacle = function ( mesh ) {
 	this.mesh = mesh;
+	this.position = mesh.position;
+
 	this.cameraRaycaster = new THREE.Raycaster();
 };
 
@@ -236,12 +275,12 @@ MicroMachines.Obstacle.prototype = function(){
 		var intersects = obstacle.cameraRaycaster.intersectObject(obstacle.mesh);
 		if (intersects.length > 0) {
 			if (distance > intersects[0].distance) {
-				setOpacity(obstacle, 0.5);
+				setOpacity(obstacle, TRANSPARENT);
 			} else {
-				setOpacity(obstacle, 1);
+				setOpacity(obstacle, SOLID);
 			}
 		} else {
-			setOpacity(obstacle, 1);
+			setOpacity(obstacle, SOLID);
 		}
 	}
 
