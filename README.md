@@ -7,7 +7,7 @@ Current game objects include:
 
 | Game Objects | Description |
 | ------------ | ----------- |
-| Car | Self explainatory, contains current state of a car (can be multiple) |
+| Car | Self explanatory, contains current state of a car (can be multiple) |
 | Obstacle | An obstacle is an object which can collide with the front of the car, currently bouncing back on collision |
 | Surface | An obstacle a car can drive across (e.g. the ground or a table) |
 
