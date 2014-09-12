@@ -35,7 +35,7 @@ Each Game Object has an update method to be run in the animation cycle on each f
 
 | Task | Description | Complete? |
 | ---- | ----------- | --------- |
-| Level descriptor files | Postions of objects, etc | N |
+| Level descriptor files | Postions of objects, etc, See ObjExporter.js in ThreeJS (could be adapted/used), Make sure to cache meshes for resuse | N |
 | Jumps | Ramps/Gravity/Physics | N |
 | Physics | Knocking over stuff (PhysiJS) | N |
 | Sound | SoundJS | N | 
