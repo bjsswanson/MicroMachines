@@ -8,6 +8,7 @@ var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 
 var DEFAULT_SPEED = 0.02;
+var BACKWARDS_MULTIPLIER = 0.5;
 var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
 var FLOAT_DRAG = 0.02;
@@ -161,7 +162,7 @@ MicroMachines.Car.prototype = function() {
 		}
 
 		if(car.input.backwards) {
-			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed * 0.5));
+			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed * BACKWARDS_MULTIPLIER));
 		}
 
 		if(car.input.left) {
