@@ -286,7 +286,7 @@ MicroMachines.Obstacle.prototype = function(){
 	}
 
 	function setOpacity( obstacle, opacity) {
-		obstacle.mesh.material.materials[0].opacity = opacity;
+		obstacle.mesh.material.materials[0].opacity = opacity; //TODO: Needs updating for materials with multiple materials
 	}
 
 	return expose;
