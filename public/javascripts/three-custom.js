@@ -11945,7 +11945,7 @@ THREE.JSONLoader.prototype.loadAjaxJSON = function ( context, url, callback, tex
 					}
 
 					var result = context.parse( json, texturePath );
-					callback( result.geometry, result.materials );
+					callback( url, result.geometry, result.materials );
 
 				} else {
 

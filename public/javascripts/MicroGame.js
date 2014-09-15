@@ -1,17 +1,21 @@
 var scene = new THREE.Scene();
 var camera = createCamera();
 var renderer = createRenderer();
-var light  = createLight();
+var world = {
+	camera: camera,
+	scene: scene,
+	cars: [],
+	surfaces: [createGround()],
+	obstacles: []
+}
 
-var cars = [];
-var surfaces = [createGround()];
-var obstacles = [];
+//createTable();
+//MicroMachines.Loader.testLoad( world );
+//MicroMachines.Loader.testLoad( world );
 
-var jsonLoader = new THREE.JSONLoader();
-jsonLoader.load( "/models/buggy/buggy.json", createCar );
-jsonLoader.load( "/models/table/table.json", createTable );
-
-animate();
+MicroMachines.Loader.load("/levels/test.json", world, function(){
+	animate();
+});
 
 function animate() {
 	requestAnimationFrame( animate );
@@ -20,6 +24,10 @@ function animate() {
 }
 
 function update() {
+	var cars = world.cars;
+	var obstacles = world.obstacles;
+	var surfaces = world.surfaces;
+
 	for(var i in cars){
 		cars[i].update(surfaces, obstacles);
 	}
@@ -30,32 +38,6 @@ function update() {
 			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
 		}
 	}
-}
-
-function createTable( geometry, materials ) {
-	var mesh = createModel( geometry, materials);
-	mesh.scale.set(3, 3, 3);
-	mesh.position.set(20, -20, 0);
-	mesh.castShadow = true;
-	mesh.receiveShadow = true;
-	mesh.material.transparent = true;
-	mesh.material.materials[0].transparent = true
-
-	scene.add(mesh);
-
-	surfaces.push( new MicroMachines.Surface( mesh ) );
-	obstacles.push( new MicroMachines.Obstacle( mesh ));
-}
-
-function createCar( geometry, materials) {
-	var mesh = createModel( geometry, materials, 1);
-	mesh.scale.set(0.5,0.5, 0.5);
-	mesh.position.set(10, 0, -20);
-	scene.add(mesh);
-
-	var car = new MicroMachines.Car( mesh );
-	car.init();
-	cars.push(car);
 }
 
 function createGround() {
@@ -72,34 +54,38 @@ function createGround() {
 	return new MicroMachines.Surface( plane );
 }
 
-function createModel( geometry, materials ) {
-	return new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
-}
-
 function createCamera() {
-	var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 10000);
-	camera.position.set( -10, 20, 10);
-	return camera;
+	return new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 10000);
 }
 
 function createRenderer() {
 	var renderer = new THREE.WebGLRenderer({ antialiasing: true });
+
 	renderer.setClearColor( 0xffffff, 1 );
+	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.shadowMapEnabled = true;
 	renderer.shadowMapSoft = true;
 	renderer.shadowMapCullFrontFaces = false;
-	renderer.setSize(window.innerWidth, window.innerHeight);
+
 	document.body.appendChild(renderer.domElement);
+
 	return renderer;
 }
 
-function createLight() {
-	var ambient = new THREE.AmbientLight( 0xffffff );
-	var spot = new THREE.SpotLight( 0xffffff );
-	spot.castShadow = true;
-	spot.position.set(0, 50, 0);
-	scene.add(spot);
-	scene.add(ambient);
+function createTable( ) {
+	var jsonLoader = new THREE.JSONLoader();
+	jsonLoader.load("/models/table/table.json", function(url, geometry, materials){
+		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+
+		mesh.scale.set(3, 3, 3);
+		mesh.position.set(20, -20, 0);
+		mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad( 0 ));
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
+
+		scene.add(mesh);
+
+	});
 }
 
 window.addEventListener( 'resize', onWindowResize, false );

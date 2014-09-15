@@ -1,0 +1,40 @@
+{
+	"camera" : {
+		"position": [-10, 20, 10]
+	},
+
+	"lights": [
+		{
+			"type": "Ambient",
+			"colour": "#ffffff"
+		},
+		{
+			"type": "SpotLight",
+			"colour": "#fffff",
+			"position": [0, 50, 0]
+		}
+	],
+
+	"cars": [
+		{
+			"model": "/models/buggy/buggy.json",
+			"position": [10, 0, -20],
+			"rotation": 0,
+			"scale": 0.5
+		}
+	],
+
+	"objects": [
+		{
+			"type": "both",
+			"model": "/models/table/table.json",
+			"position": [20, -20, 0],
+			"rotation": 0,
+			"scale": 3
+		}
+	],
+
+	"waypoints": [
+
+	]
+}
