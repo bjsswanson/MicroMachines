@@ -112,10 +112,11 @@ MicroMachines.Loader = {
 						mesh.position.fromArray(car.position);
 						mesh.scale.set(car.scale, car.scale, car.scale);
 						mesh.castShadow = true;
-						mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad(car.rotation));
 
 						var microCar = new MicroMachines.Car(mesh);
+						microCar.setRotation(car.rotation)
 						microCar.init();
+
 						world.cars.push(microCar);
 
 						world.scene.add(mesh);
