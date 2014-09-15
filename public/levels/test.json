@@ -15,6 +15,13 @@
 		}
 	],
 
+	"ground": {
+		"position": [8, -20, -10],
+		"colour": "#989898",
+		"width": 50,
+		"height": 50
+	},
+
 	"cars": [
 		{
 			"model": "/models/buggy/buggy.json",

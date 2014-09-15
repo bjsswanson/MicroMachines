@@ -10,6 +10,7 @@ MicroMachines.Loader = {
 		$.getJSON(file, function( data, status, xhr ){
 			loadCamera( data );
 			loadLights( data );
+			loadGround( data );
 			loadCarsAndObjects( data, callback );
 		}).error(function(xhr, textStatus, error){
 			console.log(error);
@@ -32,6 +33,20 @@ MicroMachines.Loader = {
 				}
 			}
 		};
+
+		function loadGround( data ) {
+			var ground = data.ground;
+			var geometry = new THREE.PlaneGeometry( ground.width, ground.height );
+			var material = new THREE.MeshBasicMaterial( {color: ground.colour, side: THREE.DoubleSide} );
+			var plane = new THREE.Mesh( geometry, material );
+
+			plane.position.fromArray(ground.position);
+			plane.receiveShadow = true;
+			plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(90));
+
+			scene.add( plane );
+			world.surfaces.push(new MicroMachines.Surface( plane ));
+		}
 
 		function loadCarsAndObjects( data, callback ) {
 			trackMeshes( data );

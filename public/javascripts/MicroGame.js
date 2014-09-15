@@ -5,7 +5,7 @@ var world = {
 	camera: camera,
 	scene: scene,
 	cars: [],
-	surfaces: [createGround()],
+	surfaces: [],
 	obstacles: []
 }
 
@@ -24,30 +24,16 @@ function update() {
 	var obstacles = world.obstacles;
 	var surfaces = world.surfaces;
 
-	for(var i in cars){
+	for (var i in cars) {
 		cars[i].update(surfaces, obstacles);
 	}
 
-	if(cars.length > 0){
+	if (cars.length > 0) {
 		camera.lookAt(cars[0].position); //this needs to work with multiple cars
-		for(var i in obstacles){
+		for (var i in obstacles) {
 			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
 		}
 	}
-}
-
-function createGround() {
-	var geometry = new THREE.PlaneGeometry( 50, 50 );
-	var material = new THREE.MeshBasicMaterial( {color: 0x999999, side: THREE.DoubleSide} );
-	var plane = new THREE.Mesh( geometry, material );
-
-	plane.receiveShadow = true;
-	plane.position.set(8, -20, -10);
-	plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(90));
-
-	scene.add( plane );
-
-	return new MicroMachines.Surface( plane );
 }
 
 function createCamera() {
