@@ -9,10 +9,6 @@ var world = {
 	obstacles: []
 }
 
-//createTable();
-//MicroMachines.Loader.testLoad( world );
-//MicroMachines.Loader.testLoad( world );
-
 MicroMachines.Loader.load("/levels/test.json", world, function(){
 	animate();
 });
@@ -70,22 +66,6 @@ function createRenderer() {
 	document.body.appendChild(renderer.domElement);
 
 	return renderer;
-}
-
-function createTable( ) {
-	var jsonLoader = new THREE.JSONLoader();
-	jsonLoader.load("/models/table/table.json", function(url, geometry, materials){
-		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-
-		mesh.scale.set(3, 3, 3);
-		mesh.position.set(20, -20, 0);
-		mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad( 0 ));
-		mesh.castShadow = true;
-		mesh.receiveShadow = true;
-
-		scene.add(mesh);
-
-	});
 }
 
 window.addEventListener( 'resize', onWindowResize, false );

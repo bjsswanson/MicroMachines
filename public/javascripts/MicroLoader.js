@@ -1,27 +1,6 @@
 var MicroMachines = window.MicroMachines || {};
 
 MicroMachines.Loader = {
-	testLoad : function ( world ) {
-		createTable();
-
-		function createTable( ) {
-			var jsonLoader = new THREE.JSONLoader();
-			jsonLoader.load("/models/table/table.json", function(url, geometry, materials){
-				var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-
-				mesh.scale.set(3, 3, 3);
-				mesh.position.set(20, -20, 0);
-				mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad( 0 ));
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-
-				world.scene.add(mesh);
-
-			});
-		}
-
-	},
-
 	load: function( file, world, callback ) {
 		var jsonLoader = new THREE.JSONLoader();
 		var scene = world.scene;
