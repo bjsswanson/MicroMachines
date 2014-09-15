@@ -3,8 +3,14 @@ var MicroMachines = window.MicroMachines || {};
 MicroMachines.Loader = {
 	load: function( file, world, callback ) {
 		var jsonLoader = new THREE.JSONLoader();
+
 		var scene = world.scene;
 		var camera = world.camera;
+		var cars = world.cars || [];
+		var obstacles = world.obstacles || [];
+		var surfaces = world.surfaces || [];
+		var ramps = world.ramps || [];
+
 		var models = {};
 
 		$.getJSON(file, function( data, status, xhr ){
@@ -45,7 +51,7 @@ MicroMachines.Loader = {
 			plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(90));
 
 			scene.add( plane );
-			world.surfaces.push(new MicroMachines.Surface( plane ));
+			surfaces.push(new MicroMachines.Surface( plane ));
 		}
 
 		function loadCarsAndObjects( data, callback ) {
@@ -111,10 +117,8 @@ MicroMachines.Loader = {
 						microCar.setRotation(car.rotation)
 						microCar.init();
 
-						world.cars.push(microCar);
-
-						world.scene.add(mesh);
-
+						cars.push(microCar);
+						scene.add(mesh);
 					}
 				}
 			}
@@ -136,11 +140,15 @@ MicroMachines.Loader = {
 
 						if (object.type === "obstacle" || object.type === "both") {
 							mesh.material.materials[0].transparent = true; //TODO: Needs updating for materials with multiple materials
-							world.obstacles.push(new MicroMachines.Obstacle(mesh));
+							obstacles.push(new MicroMachines.Obstacle(mesh));
 						}
 
 						if (object.type === "surface" || object.type === "both") {
-							world.surfaces.push(new MicroMachines.Surface(mesh));
+							surfaces.push(new MicroMachines.Surface(mesh));
+						}
+
+						if(object.type === "ramp") {
+							ramps.push(new MicroMachines.Ramp(mesh, object.boost));
 						}
 					}
 				}

@@ -11,22 +11,22 @@
 		{
 			"type": "SpotLight",
 			"colour": "#fffff",
-			"position": [0, 50, 0]
+			"position": [0, 100, 0]
 		}
 	],
 
 	"ground": {
 		"position": [8, -20, -10],
 		"colour": "#989898",
-		"width": 50,
-		"height": 50
+		"width": 1000,
+		"height": 1000
 	},
 
 	"cars": [
 		{
 			"model": "/models/buggy/buggy.json",
-			"position": [10, 0, -20],
-			"rotation": 0,
+			"position": [0, 0, -12],
+			"rotation": 90,
 			"scale": 0.5
 		}
 	],
@@ -38,6 +38,21 @@
 			"position": [20, -20, 0],
 			"rotation": 0,
 			"scale": 3
+		},
+		{
+			"type": "both",
+			"model": "/models/table/table.json",
+			"position": [60, -20, -5],
+			"rotation": 0,
+			"scale": 3
+		},
+		{
+			"type": "ramp",
+			"model": "/models/ramp/ramp.json",
+			"position": [18, -6, -12],
+			"rotation": -90,
+			"scale": 1,
+			"boost": [0.7, 0.5, 0]
 		}
 	],
 

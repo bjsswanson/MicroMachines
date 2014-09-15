@@ -6,7 +6,8 @@ var world = {
 	scene: scene,
 	cars: [],
 	surfaces: [],
-	obstacles: []
+	obstacles: [],
+	ramps: []
 }
 
 MicroMachines.Loader.load("/levels/test.json", world, function(){
@@ -25,14 +26,22 @@ function update() {
 	var surfaces = world.surfaces;
 
 	for (var i in cars) {
-		cars[i].update(surfaces, obstacles);
+		cars[i].update( world );
 	}
 
+	updateCamera( cars );
+
 	if (cars.length > 0) {
-		camera.lookAt(cars[0].position); //this needs to work with multiple cars
 		for (var i in obstacles) {
 			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
 		}
+	}
+}
+
+function updateCamera( cars ){
+	if(cars.length > 0) {
+		camera.lookAt(cars[0].position); //this needs to work with multiple cars
+		camera.position.copy(cars[0].position.clone().add(new THREE.Vector3(-10, 30, 15)));
 	}
 }
 

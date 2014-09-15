@@ -82,22 +82,37 @@ MicroMachines.Car.prototype = function() {
 		},
 
 		//Everything needed in the update cycle for a car should go here
-		update: function (surfaces, obstacles) {
+		update: function ( world ) {
 			var car = this;
 
 			var updateVelocity = new THREE.Vector3();
-			handleSurfaces(car, updateVelocity, surfaces);
+			handleSurfaces(car, updateVelocity, world.surfaces);
 
 			if (!car.floating) {
 				handleInputForce( car );
 			}
 
-			handleCollisions(car, obstacles );
+			handleRamps(car, updateVelocity, world.ramps);
+			handleCollisions(car, world.obstacles );
 			handleDrag( car );
 
 			car.velocity.clamp(MIN_VELOCITY, MAX_VELOCITY);
 			updateVelocity.add(car.velocity);
 			car.mesh.position.add(updateVelocity);
+		}
+	}
+
+	function handleRamps ( car, updateVelocity, ramps ){
+		var ramp;
+		for (var i in ramps) {
+			var intersect = downCollide(car, ramps[i].mesh, SURFACE_DISTANCE);
+			if (intersect) {
+				ramp = ramps[i];
+			}
+
+			if(ramp) {
+				car.velocity.fromArray(ramp.boost);
+			}
 		}
 	}
 
@@ -132,17 +147,18 @@ MicroMachines.Car.prototype = function() {
 	//Checks whether car is on a surface and adds gravity if not
 	//Currently doesn't handle ramps (would need to maintain distance from surface for ramps)
 	function handleSurfaces( car, updateVelocity, surfaces ) {
-		var onSurface = false;
+		var onSurface;
 		for (var i in surfaces) {
 			var intersect = downCollide(car, surfaces[i].mesh, SURFACE_DISTANCE);
 			if (intersect) {
-				onSurface = true;
+				onSurface = intersect;
 			}
 		}
 
 		if (onSurface) {
 			car.floating = false;
 			car.drag = DEFAULT_DRAG;
+			car.velocity.y = 0; //Prevents bouncing after jumps (looks glitchy)
 		} else {
 			updateVelocity.add(GRAVITY);
 			car.floating = true;
@@ -296,9 +312,22 @@ MicroMachines.Surface = function ( mesh ) {
 	this.mesh = mesh;
 };
 
-MicroMachines.Surface.prototype = function(){
+MicroMachines.Surface.prototype = function() {
 	var expose = {
 		constructor: MicroMachines.Surface
+	}
+
+	return expose;
+}();
+
+MicroMachines.Ramp = function ( mesh, boost ) {
+	this.mesh = mesh;
+	this.boost = boost;
+}
+
+MicroMachines.Ramp.prototype = function() {
+	var expose = {
+		constructor: MicroMachines.Ramp
 	}
 
 	return expose;
