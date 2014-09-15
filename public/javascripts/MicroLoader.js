@@ -120,6 +120,7 @@ MicroMachines.Loader = {
 						scene.add(mesh);
 
 						if (object.type === "obstacle" || object.type === "both") {
+							mesh.material.materials[0].transparent = true;
 							world.obstacles.push(new MicroMachines.Obstacle(mesh));
 						}
 
