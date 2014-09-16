@@ -10,6 +10,7 @@ Current game objects include:
 | Car | Self explanatory, contains current state of a car (can be multiple) |
 | Obstacle | An obstacle is an object which can collide with the front of the car, currently bouncing back on collision |
 | Surface | An obstacle a car can drive across (e.g. the ground or a table) |
+| Ramp | An object that sets the cars velocity to a predefined value (Jumps). |
 
 Each Game Object has an update method to be run in the animation cycle on each frame.
 
@@ -43,3 +44,58 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | 1,2,3,Go | Prevent race start until all ready | | N |
 | Obstacle movement | (TweenJS) e.g. Pool table where balls move | | N |
 | High Scores | Leaderboards | | N |
+
+## Notes / Useful Info
+
+### Animation Cycle
+
+The main game is setup and controlled from MicroGame.js
+
+Commonly in games and animation libraries there are two main methods, Setup() and Update()
+
+Setup() creates the initial state of the game
+Update() loops continuously updating the state of the game and rendering each frame.
+ 
+In the case of this game the setup is handled as separate functions in the top of the MicroGame.js file.
+Once setup is complete the *animate();* method is run in a loop (using the browser's requestAnimationFrame(); method), 
+which has advantages such as pausing while the user is on a different tab.
+
+### Car Physics
+
+Currently, every frame two sets of forces apply on each car (although they are combined before moving the position of the car).
+
+| Force Type | Description |
+| ----- | ----------- |
+| updateVelocity | These are forces that are consistent on each frame. e.g. Gravity applies the same force each frame |
+| car.velocity | These are forces that apply between frames, e.g. If you let go of the forward key the car should continue to move forward (until drag stops the car) |
+
+In the table below I will try to describe each force that applies to the car on each frame
+
+| Force | Force Type | Description |
+| ----- | ---------- | ----------- |
+| Gravity | updateVelocity | Only applied if the car is not in contact (less than 0.3 units) away from a surface, applied to updateVelocity instead of car.velocity so that gravity does not accumulate while in the air |
+| Input Force (from keyboard) | car.velocity | On each frame, if the key is held down and the car is on a surface then a directional force is applied. This force can accumulate over multiple updates until it hits the limit and is clamped. |
+| Drag | car.velocity | Drag is a fraction of car.velocity that is removed every update. This ensures that the car comes to a halt one the input keys are released. |
+| Collision | car.velocity | Explained in further detail below. Force is applied when colliding with an obstacle. Car velocity out of the collision is calculated and the current car.velocity is set to this value (rather than adding) |
+| Ramp.boost | car.velocity | When the car's down ray-caster touches the ramp, car.velocity is set to a predefined ramp velocity. This guarantees cars hitting the ramp will end up at the correct destination. Otherwise ramps become difficult to use and could be game breaking. | 
+
+### Surfaces
+
+
+### Collisions
+
+
+### Ramps
+
+
+### Level loading
+
+Level loading is controlled by MicroLoader.js
+
+Levels are defined in JSON files. (See /levels/test.json for an example). The JSON file contains the positions of all the necessary game objects needed to load the game.
+The loader first loops through the cars and objects and places each path to a 3D model in map (with multiples of the same model overriding each other).
+This leaves us a map with all of the 3D models required for that level.
+
+Then the models are loaded asynchronously using THREE.js JSONLoader class.
+Once all the models are loaded, the cars, obstacles, surfaces and ramps are initialised using the meshes of the 3D models and a callback is function is run.
+
