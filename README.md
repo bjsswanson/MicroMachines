@@ -27,7 +27,7 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | 3D Models | Create or Download | Ben | Partial |
 | Control | Mobile Websockets, Tap or Accelerometer | Pak | N |
 | Gameplay | Who's winning, are cars off screen? | Chloe | N |
-| Waypoints | If Cars go off screen, we need to be able to tell where to reset them | | N |
+| Waypoints | If Cars go off screen, we need to be able to tell where to reset them | Chloe | N |
 | Camera | Where does the camera look (Lead Car? Average Position of all cars? | | N |
 | Website Interface | | | N |
 | Logins | Player names | | N | 
