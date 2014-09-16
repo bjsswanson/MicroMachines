@@ -421,17 +421,20 @@ def parse_mtl(fname):
             # Diffuse color
             # Kd 1.000 1.000 1.000
             if chunks[0] == "Kd" and len(chunks) == 4:
-                materials[identifier]["colorDiffuse"] = [float(chunks[1]), float(chunks[2]), float(chunks[3])]
+                #materials[identifier]["colorDiffuse"] = [float(chunks[1]), float(chunks[2]), float(chunks[3])]
+                materials[identifier]["colorDiffuse"] = [0.5, 0.5, 0.5]
 
             # Ambient color
             # Ka 1.000 1.000 1.000
             if chunks[0] == "Ka" and len(chunks) == 4:
-                materials[identifier]["colorAmbient"] = [float(chunks[1]), float(chunks[2]), float(chunks[3])]
+                #materials[identifier]["colorAmbient"] = [float(chunks[1]), float(chunks[2]), float(chunks[3])]
+                materials[identifier]["colorAmbient"] = [0.5, 0.5, 0.5]
 
             # Specular color
             # Ks 1.000 1.000 1.000
             if chunks[0] == "Ks" and len(chunks) == 4:
-                materials[identifier]["colorSpecular"] = [float(chunks[1]), float(chunks[2]), float(chunks[3])]
+                #materials[identifier]["colorSpecular"] = [float(chunks[1]), float(chunks[2]), float(chunks[3])]
+                materials[identifier]["colorSpecular"] = [0.5, 0.5, 0.5]
 
             # Specular coefficient
             # Ns 154.000

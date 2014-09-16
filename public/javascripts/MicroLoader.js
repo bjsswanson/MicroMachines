@@ -36,6 +36,10 @@ MicroMachines.Loader = {
 					spotLight.position.fromArray(light.position);
 					spotLight.castShadow = true;
 					scene.add(spotLight);
+				} else if (light.type === "Directional") {
+					var directional = new THREE.DirectionalLight(light.colour, 1);
+					directional.castShadow = true;
+					scene.add(directional);
 				}
 			}
 		};
