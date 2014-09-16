@@ -37,7 +37,7 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | Task | Description | Person | Complete? |
 | ---- | ----------- | ------ | --------- |
 | Level descriptor files | Postions of objects, etc, See ObjExporter.js in ThreeJS (could be adapted/used), Make sure to cache meshes for resuse | Ben | Partial |
-| Jumps | Ramps/Gravity/Physics | | N |
+| Jumps | Ramps/Gravity/Physics | Ben | Y |
 | Physics | Knocking over stuff (PhysiJS) | | N |
 | Sound | SoundJS | | N | 
 | Loading/Preloading | 3D models and images | | N |
@@ -57,7 +57,7 @@ Setup() creates the initial state of the game
 Update() loops continuously updating the state of the game and rendering each frame.
  
 In the case of this game the setup is handled as separate functions in the top of the MicroGame.js file.
-Once setup is complete the *animate();* method is run in a loop (using the browser's requestAnimationFrame(); method), 
+Once setup is complete the **animate();** method is run in a loop (using the browser's requestAnimationFrame(); method), 
 which has advantages such as pausing while the user is on a different tab.
 
 ### Car Physics
@@ -81,21 +81,44 @@ In the table below I will try to describe each force that applies to the car on 
 
 ### Surfaces
 
+Surfaces are meshes that the car's sit on top of. Each car detects collision with a surface using a down facing raycaster - Vector3(0, -1, 0).
+An object can be both a Surface and an Obstacle.
 
-### Collisions
+### Obstacles
 
+Obstacles are objects that a car can collide with. Each car has 4 raycasters that check for collisions:
+- forward ( ↑ ) 0 degrees
+- forward left ( ↖ ) -45 degrees
+- forward right ( ↗ ) 45 degrees
+- backwards ( ↓ ) 180 degrees
+
+These give the best coverage for a mainly forward moving vehicle without impacting performance (8 ray-casters untested).
+
+If any of these ray-casters intersects less than a certain distance (per ray-caster) then a resultant vector is calculated and is set as the car's
+current velocity.
+
+#### Resultant Car Velocity
+
+Once a collision is detected, the [normal vector](http://en.wikipedia.org/wiki/Normal_\(geometry\)) of the colliding face is
+given the same length as the current car velocity and then added to the current car velocity. This gives a psuedo realistic 
+resulting vector from the collision. This vector is then halved in order to dampen the result (slow the car) and a small
+vector in the direction of the collision normal (1/10) is added to add a little bounce.
+
+TODO: Add Diagram
 
 ### Ramps
 
+Ramps are objects that set a car's velocity to a predefined direction and speed. A ramp is detected using each car's down ray-caster.
+Having the car's velocity set to a defined vector is useful as it means that no matter what speed or direction the car hits the ramp,
+the car will end up in the intended location (i.e. on a table), preventing difficult sections of track.
 
 ### Level loading
 
 Level loading is controlled by MicroLoader.js
 
 Levels are defined in JSON files. (See /levels/test.json for an example). The JSON file contains the positions of all the necessary game objects needed to load the game.
-The loader first loops through the cars and objects and places each path to a 3D model in map (with multiples of the same model overriding each other).
+The loader first loops through the cars and objects and places each path to a 3D model in a map (with multiples of the same model overriding each other).
 This leaves us a map with all of the 3D models required for that level.
 
 Then the models are loaded asynchronously using THREE.js JSONLoader class.
 Once all the models are loaded, the cars, obstacles, surfaces and ramps are initialised using the meshes of the 3D models and a callback is function is run.
-
