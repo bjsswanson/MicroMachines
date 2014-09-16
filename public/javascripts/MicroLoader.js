@@ -144,7 +144,7 @@ MicroMachines.Loader = {
 
 						if (object.type === "obstacle" || object.type === "both") {
 							mesh.material.materials[0].transparent = true; //TODO: Needs updating for materials with multiple materials
-							obstacles.push(new MicroMachines.Obstacle(mesh));
+							obstacles.push(new MicroMachines.Obstacle(mesh, object.rotation));
 						}
 
 						if (object.type === "surface" || object.type === "both") {

@@ -51,7 +51,7 @@
 			"type": "both",
 			"model": "/models/table/table.json",
 			"position": [40, 0, 0],
-			"rotation": 90,
+			"rotation": 45,
 			"scale": 3
 		},
 		{

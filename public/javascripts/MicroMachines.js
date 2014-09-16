@@ -120,19 +120,23 @@ MicroMachines.Car.prototype = function() {
 	//May need to rule out some far away objects first with distance check, no need to raycast against objects that aren't nearby
 	function handleCollisions( car, obstacles) {
 		for(var i in obstacles) {
-			if (car.position.distanceTo(obstacles[i].position) < COLLISION_CHECK_DISTANCE) { //No need to check against far away objects (Although this needs to take into account large objects)
-				var intersect = forwardCollide(car, obstacles[i].mesh);
+			var obstacle = obstacles[i];
+			if (car.position.distanceTo(obstacle.position) < COLLISION_CHECK_DISTANCE) { //No need to check against far away objects (Although this needs to take into account large objects)
+				var intersect = forwardCollide(car, obstacle.mesh);
 				if (intersect) {
 					var velocity = car.velocity.clone(); // Take the current velocity
 
-					var normalVelocity = intersect.face.normal.clone(); //Create a vector in the direction of the normal
+					var normal = intersect.face.normal.clone();
+					normal.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( obstacle.rotation ))); // Account for rotation of mesh
+
+					var normalVelocity = normal.clone(); //Create a vector in the direction of the normal
 					normalVelocity.multiply(absoluteVector(car.velocity));  //with the length (speed) of the current velocity
 
 					var result = velocity.add(normalVelocity); // Add the current velocity to the normal velocity
 					result.normalize(); // Normalize the result (length of 1)
 					result.multiplyScalar(car.velocity.length()); // Make the result the same length (speed) as the original car velocity
 					result.multiplyScalar(DAMPEN); //Dampen the resulting vector - Problem with intersection
-					result.add(intersect.face.normal.clone().multiplyScalar(0.1)); //Add a little bit in case velocity was zero. (Prevents intersection better)
+					result.add(normal.multiplyScalar(0.1)); //Add a little bit in case velocity was zero. (Prevents intersection better), Not cloning normal since we don't need it any more
 
 					car.velocity.copy(result); // Set the car's velocity to the result
 				}
@@ -265,9 +269,10 @@ MicroMachines.Car.prototype = function() {
 }();
 
 
-MicroMachines.Obstacle = function ( mesh ) {
+MicroMachines.Obstacle = function ( mesh, rotation ) {
 	this.mesh = mesh;
 	this.position = mesh.position;
+	this.rotation = rotation;
 
 	this.cameraRaycaster = new THREE.Raycaster();
 };
