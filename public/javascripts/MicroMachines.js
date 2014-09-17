@@ -16,7 +16,7 @@ var TURN_ANGLE = 2;
 var DAMPEN = 0.5;
 var TRANSPARENT = 0.5;
 var SOLID = 1;
-var COLLISION_CHECK_DISTANCE = 10;
+var COLLISION_CHECK_DISTANCE = 50;
 var BOUNCE = 0.05;
 
 MicroMachines.Car = function ( mesh ) {
@@ -36,7 +36,7 @@ MicroMachines.Car = function ( mesh ) {
 		{ angle: 180, distance: 0.5, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) }
 	]
 
-	this.downRaycaster = new THREE.Raycaster(new THREE.Vector3(), DOWN);
+	this.downRaycaster = new THREE.Raycaster(this.position, DOWN);
 
 	this.floating = true;
 	this.speed = DEFAULT_SPEED;
@@ -152,7 +152,7 @@ MicroMachines.Car.prototype = function() {
 	//Checks whether car is on a surface and adds gravity if not
 	//Currently doesn't handle ramps (would need to maintain distance from surface for ramps)
 	function handleSurfaces( car, updateVelocity, surfaces ) {
-		car.downRaycaster.set(car.position.clone().add(new THREE.Vector3(0, 0.1, 0)), DOWN); //Moves the raycaster up 0.1 units with the bottom of the car at the end of the ray-caster rather than the beginning
+		//car.downRaycaster.set(car.position.clone().add(new THREE.Vector3(0, 0.1, 0)), DOWN); //WARNING: BREAKS FORWARD RAYCASTING
 
 		var onSurface;
 		for (var i in surfaces) {

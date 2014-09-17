@@ -143,7 +143,7 @@ MicroMachines.Loader = {
 					var object = data.objects[i];
 					if (object.model != undefined) {
 						var model = models[object.model];
-						var mesh = new THREE.Mesh(model.geometry, new THREE.MeshFaceMaterial(model.materials)); //Might need to clone mesh in order to get transparent to work if the same object get used more than once
+						var mesh = new THREE.Mesh(model.geometry, cloneMaterials()); //Might need to clone mesh in order to get transparent to work if the same object get used more than once
 
 						mesh.scale.set(object.scale, object.scale, object.scale);
 						mesh.position.fromArray(object.position);
@@ -154,7 +154,6 @@ MicroMachines.Loader = {
 						scene.add(mesh);
 
 						if (object.type === "obstacle" || object.type === "both") {
-							mesh.material.materials[0].transparent = true; //TODO: Needs updating for materials with multiple materials
 							obstacles.push(new MicroMachines.Obstacle(mesh, object.rotation));
 						}
 
@@ -169,6 +168,19 @@ MicroMachines.Loader = {
 				}
 
 				callback();
+
+
+				function cloneMaterials() {
+					var clonedMaterials = [];
+
+					for(var i in model.materials){
+						var material = model.materials[i].clone();
+						material.transparent = true;
+						clonedMaterials.push(material);
+					}
+
+					return new THREE.MeshFaceMaterial(clonedMaterials);
+				}
 			}
 		}
 	}
