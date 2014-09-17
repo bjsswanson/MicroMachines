@@ -7,7 +7,7 @@ var MIN_VELOCITY = new THREE.Vector3(-1, -1, -1);
 var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 
-var DEFAULT_SPEED = 0.02;
+var DEFAULT_SPEED = 0.015;
 var BACKWARDS_MULTIPLIER = 0.5;
 var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;

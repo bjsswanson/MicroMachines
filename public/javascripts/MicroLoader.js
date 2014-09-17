@@ -37,7 +37,7 @@ MicroMachines.Loader = {
 					spotLight.castShadow = true;
 					scene.add(spotLight);
 				} else if (light.type === "Directional") {
-					var directional = new THREE.DirectionalLight(light.colour, 0.5);
+					var directional = new THREE.DirectionalLight(light.colour, light.intensity);
 					directional.position.fromArray(light.position);
 					directional.castShadow = true;
 					directional.shadowCameraLeft = -light.shadowSize;

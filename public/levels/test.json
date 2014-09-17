@@ -12,6 +12,7 @@
 			"type": "Directional",
 			"colour": "#fffff",
 			"position": [40, 100, 0],
+			"intensity": 0.2,
 			"shadowSize": 20,
 			"shadowMapSize": 512
 		},
@@ -19,6 +20,23 @@
 			"type": "Directional",
 			"colour": "#fffff",
 			"position": [0, 100, 0],
+			"intensity": 0.2,
+			"shadowSize": 20,
+			"shadowMapSize": 512
+		},
+		{
+			"type": "Directional",
+			"colour": "#fffff",
+			"position": [40, 100, -40],
+			"intensity": 0.2,
+			"shadowSize": 20,
+			"shadowMapSize": 512
+		},
+		{
+			"type": "Directional",
+			"colour": "#fffff",
+			"position": [0, 100, -40],
+			"intensity": 0.2,
 			"shadowSize": 20,
 			"shadowMapSize": 512
 		}
@@ -72,10 +90,41 @@
 		},
 		{
 			"type": "both",
-			"model": "/models/chair/chair.json",
-			"position": [0, 0, -15],
-			"rotation": -90,
+			"model": "/models/table/table.json",
+			"position": [40, 0, -40],
+			"rotation": 0,
 			"scale": 3
+		},
+		{
+			"type": "ramp",
+			"model": "/models/ramp/ramp.json",
+			"position": [42, 14, -10],
+			"rotation": 0,
+			"scale": 1,
+			"boost": [0, 0.5, -0.75]
+		},
+		{
+			"type": "ramp",
+			"model": "/models/ramp/ramp.json",
+			"position": [30, 14, -40],
+			"rotation": 90,
+			"scale": 1,
+			"boost": [-0.75, 0.5, 0]
+		},
+		{
+			"type": "both",
+			"model": "/models/table/table.json",
+			"position": [0, 0, -40],
+			"rotation": 45,
+			"scale": 3
+		},
+		{
+			"type": "ramp",
+			"model": "/models/ramp/ramp.json",
+			"position": [0, 14, -30],
+			"rotation": 180,
+			"scale": 1,
+			"boost": [0, 0.5, 0.75]
 		}
 	],
 
