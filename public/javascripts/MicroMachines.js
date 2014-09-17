@@ -7,7 +7,7 @@ var MIN_VELOCITY = new THREE.Vector3(-1, -1, -1);
 var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 
-var DEFAULT_SPEED = 0.02;
+var DEFAULT_SPEED = 0.01;
 var BACKWARDS_MULTIPLIER = 0.5;
 var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
@@ -16,7 +16,7 @@ var TURN_ANGLE = 2;
 var DAMPEN = 0.5;
 var TRANSPARENT = 0.5;
 var SOLID = 1;
-var COLLISION_CHECK_DISTANCE = 50;
+var COLLISION_CHECK_DISTANCE = 10;
 
 MicroMachines.Car = function ( mesh ) {
 	this.mesh = mesh;
