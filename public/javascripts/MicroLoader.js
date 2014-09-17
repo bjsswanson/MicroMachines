@@ -37,8 +37,19 @@ MicroMachines.Loader = {
 					spotLight.castShadow = true;
 					scene.add(spotLight);
 				} else if (light.type === "Directional") {
-					var directional = new THREE.DirectionalLight(light.colour, 1);
+					var directional = new THREE.DirectionalLight(light.colour, 0.5);
+					directional.position.fromArray(light.position);
 					directional.castShadow = true;
+					directional.shadowCameraLeft = -light.shadowSize;
+					directional.shadowCameraRight = light.shadowSize;
+					directional.shadowCameraTop = light.shadowSize;
+					directional.shadowCameraBottom = -light.shadowSize;
+					directional.shadowMapWidth = light.shadowMapSize;
+					directional.shadowMapHeight = light.shadowMapSize;
+
+					directional.target.position.set(directional.position.x, 0, directional.position.z);
+					//directional.shadowCameraVisible = true; //For Debug
+
 					scene.add(directional);
 				}
 			}

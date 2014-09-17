@@ -9,9 +9,18 @@
 			"colour": "#ffffff"
 		},
 		{
-			"type": "SpotLight",
+			"type": "Directional",
 			"colour": "#fffff",
-			"position": [0, 100, 0]
+			"position": [40, 100, 0],
+			"shadowSize": 20,
+			"shadowMapSize": 512
+		},
+		{
+			"type": "Directional",
+			"colour": "#fffff",
+			"position": [0, 100, 0],
+			"shadowSize": 20,
+			"shadowMapSize": 512
 		}
 	],
 
