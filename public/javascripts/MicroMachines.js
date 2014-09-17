@@ -7,7 +7,7 @@ var MIN_VELOCITY = new THREE.Vector3(-1, -1, -1);
 var MAX_VELOCITY = new THREE.Vector3(1, 1, 1);
 var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 
-var DEFAULT_SPEED = 0.01;
+var DEFAULT_SPEED = 0.02;
 var BACKWARDS_MULTIPLIER = 0.5;
 var SURFACE_DISTANCE = 0.3;
 var DEFAULT_DRAG = 0.05;
@@ -17,6 +17,7 @@ var DAMPEN = 0.5;
 var TRANSPARENT = 0.5;
 var SOLID = 1;
 var COLLISION_CHECK_DISTANCE = 10;
+var BOUNCE = 0.05;
 
 MicroMachines.Car = function ( mesh ) {
 	this.mesh = mesh;
@@ -29,13 +30,13 @@ MicroMachines.Car = function ( mesh ) {
 
 	//Be careful when updating raycasters because set changes the original values through the pointer.
 	this.colliders = [
-		{ angle: 0, distance: 1, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
-		{ angle: 45, distance: 0.6, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
-		{ angle: -45, distance: 0.6, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
-		{ angle: 180, distance: 1, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) }
+		{ angle: 0, distance: 0.5, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: 45, distance: 0.3, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: -45, distance: 0.3, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: 180, distance: 0.5, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) }
 	]
 
-	this.downRaycaster = new THREE.Raycaster(this.position, DOWN);
+	this.downRaycaster = new THREE.Raycaster(new THREE.Vector3(), DOWN);
 
 	this.floating = true;
 	this.speed = DEFAULT_SPEED;
@@ -136,7 +137,7 @@ MicroMachines.Car.prototype = function() {
 					result.normalize(); // Normalize the result (length of 1)
 					result.multiplyScalar(car.velocity.length()); // Make the result the same length (speed) as the original car velocity
 					result.multiplyScalar(DAMPEN); //Dampen the resulting vector - Problem with intersection
-					result.add(normal.multiplyScalar(0.1)); //Add a little bit in case velocity was zero. (Prevents intersection better), Not cloning normal since we don't need it any more
+					result.add(normal.multiplyScalar(BOUNCE)); //Add a little bit in case velocity was zero. (Prevents intersection better), Not cloning normal since we don't need it any more
 
 					car.velocity.copy(result); // Set the car's velocity to the result
 				}
@@ -151,6 +152,8 @@ MicroMachines.Car.prototype = function() {
 	//Checks whether car is on a surface and adds gravity if not
 	//Currently doesn't handle ramps (would need to maintain distance from surface for ramps)
 	function handleSurfaces( car, updateVelocity, surfaces ) {
+		car.downRaycaster.set(car.position.clone().add(new THREE.Vector3(0, 0.1, 0)), DOWN); //Moves the raycaster up 0.1 units with the bottom of the car at the end of the ray-caster rather than the beginning
+
 		var onSurface;
 		for (var i in surfaces) {
 			var intersect = downCollide(car, surfaces[i].mesh, SURFACE_DISTANCE);
