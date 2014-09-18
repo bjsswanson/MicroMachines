@@ -52,6 +52,7 @@
 	"cars": [
 		{
 			"model": "/models/buggy/buggy.json",
+			"name": "car 1",
 			"position": [0, 30, 0],
 			"rotation": 90,
 			"scale": 0.2
@@ -61,6 +62,7 @@
 	"objects": [
 		{
 			"type": "both",
+			"name": "table 1",
 			"model": "/models/table/table.json",
 			"position": [0, 0, 0],
 			"rotation": 0,
@@ -68,6 +70,7 @@
 		},
 		{
 			"type": "ramp",
+			"name": "ramp 1",
 			"model": "/models/ramp/ramp.json",
 			"position": [10, 14, 0],
 			"rotation": -90,
@@ -76,6 +79,7 @@
 		},
 		{
 			"type": "both",
+			"name": "table 2",
 			"model": "/models/table/table.json",
 			"position": [40, 0, 0],
 			"rotation": 45,
@@ -83,6 +87,7 @@
 		},
 		{
 			"type": "both",
+			"name": "chair 1",
 			"model": "/models/chair/chair.json",
 			"position": [-15, 0, 0],
 			"rotation": 0,
@@ -90,6 +95,7 @@
 		},
 		{
 			"type": "both",
+			"name": "table 3",
 			"model": "/models/table/table.json",
 			"position": [40, 0, -40],
 			"rotation": 0,
@@ -97,6 +103,7 @@
 		},
 		{
 			"type": "ramp",
+			"name": "ramp 2",
 			"model": "/models/ramp/ramp.json",
 			"position": [42, 14, -10],
 			"rotation": 0,
@@ -105,6 +112,7 @@
 		},
 		{
 			"type": "ramp",
+			"name": "ramp 3",
 			"model": "/models/ramp/ramp.json",
 			"position": [30, 14, -40],
 			"rotation": 90,
@@ -113,6 +121,7 @@
 		},
 		{
 			"type": "both",
+			"name": "table 4",
 			"model": "/models/table/table.json",
 			"position": [0, 0, -40],
 			"rotation": 45,
@@ -120,6 +129,7 @@
 		},
 		{
 			"type": "ramp",
+			"name": "ramp 4",
 			"model": "/models/ramp/ramp.json",
 			"position": [0, 14, -30],
 			"rotation": 180,

@@ -9,7 +9,7 @@ var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 
 var DEFAULT_SPEED = 0.015;
 var BACKWARDS_MULTIPLIER = 0.5;
-var SURFACE_DISTANCE = 0.3;
+var SURFACE_DISTANCE = 0.3; //Values less than 0.3 seem to break current forward ray-casting. The forward vectors probably need to be a bit higher (+y)
 var DEFAULT_DRAG = 0.05;
 var FLOAT_DRAG = 0.02;
 var TURN_ANGLE = 2;
@@ -76,10 +76,10 @@ MicroMachines.Car.prototype = function() {
 		},
 
 		// This only checks if the center of the mesh is in view, not the whole mesh
-		isVisible: function( camera ) {
+		isVisible: function( car, camera ) {
 			var frustum = new THREE.Frustum();
 			frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
-			return frustum.containsPoint(mesh.position);
+			return frustum.containsPoint(car.position);
 		},
 
 		//Everything needed in the update cycle for a car should go here
@@ -99,7 +99,7 @@ MicroMachines.Car.prototype = function() {
 
 			car.velocity.clamp(MIN_VELOCITY, MAX_VELOCITY);
 			updateVelocity.add(car.velocity);
-			car.mesh.position.add(updateVelocity);
+			car.position.add(updateVelocity);
 		}
 	}
 

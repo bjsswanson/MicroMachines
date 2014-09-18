@@ -61,6 +61,7 @@ MicroMachines.Loader = {
 			var material = new THREE.MeshBasicMaterial( {color: ground.colour, side: THREE.DoubleSide} );
 			var plane = new THREE.Mesh( geometry, material );
 
+			plane.name = "ground";
 			plane.position.fromArray(ground.position);
 			plane.receiveShadow = true;
 			plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(90));
@@ -123,7 +124,7 @@ MicroMachines.Loader = {
 						var model = models[car.model];
 						var mesh = new THREE.Mesh(model.geometry, new THREE.MeshFaceMaterial(model.materials));
 
-						mesh.name = car.model;
+						mesh.name = car.name;
 						mesh.position.fromArray(car.position);
 						mesh.scale.set(car.scale, car.scale, car.scale);
 						mesh.castShadow = true;
@@ -145,6 +146,7 @@ MicroMachines.Loader = {
 						var model = models[object.model];
 						var mesh = new THREE.Mesh(model.geometry, cloneMaterials()); //Might need to clone mesh in order to get transparent to work if the same object get used more than once
 
+						mesh.name = object.name;
 						mesh.scale.set(object.scale, object.scale, object.scale);
 						mesh.position.fromArray(object.position);
 						mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad(object.rotation));
