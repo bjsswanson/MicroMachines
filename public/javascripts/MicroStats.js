@@ -16,7 +16,7 @@ $(function(){
 	function statsUpdate() {
 		requestAnimationFrame( statsUpdate );
 		if( world ) {
-			carStats(pp, pf, statsBox);
+			carStats(statsBox);
 			objectDetect(statsBox);
 		}
 	}
@@ -33,9 +33,9 @@ $(function(){
 		stats.css("position", "absolute");
 		stats.css("top", "0");
 		stats.css("left", "0");
-		stats.css("background-color", "lightgrey");
+		stats.css("background-color", "rgba(211, 211, 211, 0.5)");
 		stats.css("width", "250px");
-		stats.css("height", "75px");
+		stats.css("height", "100px");
 		$('body').append(stats);
 
 		var position = $('<span id="position"></span>')
@@ -46,19 +46,24 @@ $(function(){
 		forward.css("display", "block");
 		stats.append(forward);
 
-		var object = $('<span id="object"></span>')
-		object.css("display", "block");
-		stats.append(object);
 
 		var mouse = $('<span id="mouse"></span>')
 		mouse.css("display", "block");
 		stats.append(mouse);
 
+		var object = $('<span id="object"></span>')
+		object.css("display", "block");
+		stats.append(object);
+
+		var objectPosition = $('<span id="objectPosition"></span>')
+		objectPosition.css("display", "block");
+		stats.append(objectPosition);
 
 		return {
 			position: position,
 			forward: forward,
 			object: object,
+			objectPosition: objectPosition,
 			mouse: mouse
 		}
 	}
@@ -72,26 +77,28 @@ $(function(){
 		var intersects = raycaster.intersectObjects( world.scene.children );
 
 		if ( intersects.length > 0 ) {
-			statsBox.object.text("Object: " + intersects[ 0 ].object.name);
 			statsBox.mouse.text("Mouse: " + roundArray(intersects[ 0 ].point.toArray()));
+			statsBox.object.text("Mouse object: " + intersects[ 0 ].object.name);
+			statsBox.objectPosition.text("Mouse object position: " + roundArray(intersects[ 0 ].object.position.toArray()));
 		} else {
-			statsBox.object.text("Object: none");
 			statsBox.mouse.text("Mouse: none");
+			statsBox.object.text("Object: none");
+			statsBox.objectPosition.text("Object position: none");
 		}
 	}
 
-	function carStats( pp, pf, statsBox ) {
+	function carStats( statsBox ) {
 		var car = world.cars[0];
 		if (car) {
 			var p = roundArray(car.position.toArray());
 			var f = roundArray(car.forward.toArray());
 
 			if (pp !== p) {
-				statsBox.position.text("Position: " + roundArray(car.position.toArray()));
+				statsBox.position.text("Car position: " + roundArray(car.position.toArray()));
 			}
 
 			if (pf !== f) {
-				statsBox.forward.text("Forward: " + roundArray(car.forward.toArray()));
+				statsBox.forward.text("Car forward: " + roundArray(car.forward.toArray()));
 			}
 
 			pp = p;
@@ -100,10 +107,13 @@ $(function(){
 	}
 
 
-	function roundArray( arr ){
-		arr[0] = Math.round(arr[0] * 100) / 100
-		arr[1] = Math.round(arr[1] * 100) / 100
-		arr[2] = Math.round(arr[2] * 100) / 100
+	function roundArray( arr, decimals ){
+		if( !decimals ) decimals = 2;
+
+		var x = Math.pow(10, decimals);
+		arr[0] = Math.round(arr[0] * x) / x;
+		arr[1] = Math.round(arr[1] * x) / x;
+		arr[2] = Math.round(arr[2] * x) / x;
 
 		return "[" + arr[0] + ", " + arr[1] + ", " + arr[2] + "]";
 	}
