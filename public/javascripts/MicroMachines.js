@@ -93,6 +93,8 @@ MicroMachines.Car.prototype = function() {
 				handleInputForce( car );
 			}
 
+			handleStart();
+			//handleStop();
 			handleRamps(car, updateVelocity, world.ramps);
 			handleCollisions(car, world.obstacles );
 			handleDrag( car );
@@ -113,6 +115,20 @@ MicroMachines.Car.prototype = function() {
 
 			if(ramp) {
 				car.velocity.fromArray(ramp.boost);
+			}
+		}
+	}
+
+	function handleStart ( car ) {
+		var start;
+		for (var i in start) {
+			var intersect = downCollide(car, start[i].mesh, SURFACE_DISTANCE);
+			if (interset) {
+				start = start[i];
+			}
+
+			if (ramp) {
+				car.velocity.fromArray(start);
 			}
 		}
 	}
@@ -340,3 +356,44 @@ MicroMachines.Ramp.prototype = function() {
 
 	return expose;
 }();
+
+// Attempting a starting and finishing line
+MicroMachines.Start = function () {
+	this.running = true;
+	this.car.start();
+
+	for( var i = 0; i < this.cars.length; i++ ) {
+		this.cars[i].start();
+	}
+
+	this.state = MicroMachines.STATE_START;
+	this.showResults();
+};
+
+MicroMachines.Start.prototype = function() {
+	var expose = {
+		constructor: MicroMachines.Start
+	}
+
+	return expose;
+}
+
+MicroMachines.Stop = function () {
+	this.running = false;
+	this.car.stop();
+
+	for( var i = 0; i < this.car.length; i++ ) {
+		this.cars[i].stop();
+	}
+
+	this.state = MicroMachines.STATE_COMPLETE;
+	this.showResults();
+}
+
+MicroMachines.Stop.prototype = function() {
+	var expose = {
+		constructor: MicroMachines.Stop
+	}
+
+	return expose;
+}
