@@ -93,8 +93,6 @@ MicroMachines.Car.prototype = function() {
 				handleInputForce( car );
 			}
 
-			handleStart();
-			//handleStop();
 			handleRamps(car, updateVelocity, world.ramps);
 			handleCollisions(car, world.obstacles );
 			handleDrag( car );
@@ -115,20 +113,6 @@ MicroMachines.Car.prototype = function() {
 
 			if(ramp) {
 				car.velocity.fromArray(ramp.boost);
-			}
-		}
-	}
-
-	function handleStart ( car ) {
-		var start;
-		for (var i in start) {
-			var intersect = downCollide(car, start[i].mesh, SURFACE_DISTANCE);
-			if (interset) {
-				start = start[i];
-			}
-
-			if (ramp) {
-				car.velocity.fromArray(start);
 			}
 		}
 	}
@@ -359,7 +343,7 @@ MicroMachines.Ramp.prototype = function() {
 
 // Attempting a starting and finishing line
 
-MicroMachines.Start.prototype = function() {
+MicroMachines.prototype.start = function( car ) {
 	this.running = true;
 	this.car.start();
 
@@ -368,10 +352,10 @@ MicroMachines.Start.prototype = function() {
 	}
 
 	this.state = MicroMachines.STATE_START;
-	this.showResults();
+	this.initGameplay();
 }();
 
-MicroMachines.Stop.prototype = function() {
+MicroMachines.prototype.stop = function( car ) {
 	this.running = false;
 	this.car.stop();
 
@@ -444,4 +428,17 @@ MicroMachines.CameraChase.prototype.update = function(dt, ratio) {
 	if( this.cameraCube != null ) {
 		this.cameraCube.rotation.copy(this.camera.rotation);
 	}
+}
+
+// Gameplay
+
+MicroMachines.prototype.initGameplay = function() {
+	var self = this;
+
+	this.gameplay = new MicroMachines.Gameplay({
+		mode: this.mode,
+		cameraControls: this.components.cameraChase
+	});
+
+	this.gameplay.start();
 }
