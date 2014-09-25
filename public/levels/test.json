@@ -135,6 +135,38 @@
 			"rotation": 180,
 			"scale": 1,
 			"boost": [0, 0.5, 0.75]
+		},
+		{
+			"type": "surface",
+			"name": "ramp_surface_1",
+			"model": "/models/ramp/ramp.json",
+			"position": [5, 14, 10],
+			"rotation": -135,
+			"scale": 1
+		},
+		{
+			"type": "surface",
+			"name": "ramp_surface_2",
+			"model": "/models/ramp/ramp.json",
+			"position": [8.5, 15, 13.5],
+			"rotation": -135,
+			"scale": 1
+		},
+		{
+			"type": "surface",
+			"name": "ramp_surface_3",
+			"model": "/models/ramp/ramp.json",
+			"position": [12, 16, 17],
+			"rotation": -135,
+			"scale": 1
+		},
+		{
+			"type": "surface",
+			"name": "ramp_surface_4",
+			"model": "/models/ramp/ramp.json",
+			"position": [15.5, 17, 20.5],
+			"rotation": -135,
+			"scale": 1
 		}
 	],
 
