@@ -171,6 +171,19 @@
 	],
 
 	"waypoints": [
-
+		{
+			"type": "start",
+			"name": "Starting point",
+			"position": [0, 0, 0],
+			"rotation": 0,
+			"scale": 1
+		},
+		{
+			"type": "finsih",
+			"name": "Finishing point",
+			"position": [0, 0, -40],
+			"rotation": 45,
+			"scale": 1
+		}
 	]
 }
