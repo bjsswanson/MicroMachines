@@ -9,10 +9,11 @@ var GRAVITY = new THREE.Vector3(0, -0.25, 0);
 
 var DEFAULT_SPEED = 0.015;
 var BACKWARDS_MULTIPLIER = 0.5;
-var SURFACE_DISTANCE = 0.3; //Values less than 0.3 seem to break current forward ray-casting. The forward vectors probably need to be a bit higher (+y)
+var SURFACE_DISTANCE = 0.2; //Distance to set car y value when on a surface
+var SURFACE_COLLISION_DISTANCE = 0.3; //Values less than 0.3 seem to break current forward ray-casting. The forward vectors probably need to be a bit higher (+y)
 var DEFAULT_DRAG = 0.05;
 var FLOAT_DRAG = 0.02;
-var TURN_ANGLE = 2;
+var TURN_ANGLE = 3;
 var DAMPEN = 0.5;
 var TRANSPARENT = 0.5;
 var SOLID = 1;
@@ -106,7 +107,7 @@ MicroMachines.Car.prototype = function() {
 	function handleRamps ( car, updateVelocity, ramps ){
 		var ramp;
 		for (var i in ramps) {
-			var intersect = downCollide(car, ramps[i].mesh, SURFACE_DISTANCE);
+			var intersect = downCollide(car, ramps[i].mesh, SURFACE_COLLISION_DISTANCE);
 			if (intersect) {
 				ramp = ramps[i];
 			}
@@ -156,7 +157,7 @@ MicroMachines.Car.prototype = function() {
 
 		var onSurface;
 		for (var i in surfaces) {
-			var intersect = downCollide(car, surfaces[i].mesh, SURFACE_DISTANCE);
+			var intersect = downCollide(car, surfaces[i].mesh, SURFACE_COLLISION_DISTANCE);
 			if (intersect) {
 				onSurface = intersect;
 			}
@@ -166,6 +167,7 @@ MicroMachines.Car.prototype = function() {
 			car.floating = false;
 			car.drag = DEFAULT_DRAG;
 			car.velocity.y = 0; //Prevents bouncing after jumps (looks glitchy)
+			car.position.y = onSurface.point.y + SURFACE_DISTANCE;
 		} else {
 			updateVelocity.add(GRAVITY);
 			car.floating = true;
