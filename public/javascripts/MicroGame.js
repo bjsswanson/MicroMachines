@@ -41,7 +41,7 @@ function update() {
 function updateCamera( cars ){
 	if(cars.length > 0) {
 		camera.lookAt(cars[0].position); //this needs to work with multiple cars
-		camera.position.copy(cars[0].position.clone().add(new THREE.Vector3(-10, 20, 10)));
+		camera.position.copy(cars[0].position.clone().add(new THREE.Vector3(-8, 16, 8)));
 	}
 }
 

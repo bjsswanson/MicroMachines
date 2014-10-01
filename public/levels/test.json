@@ -62,6 +62,22 @@
 	"objects": [
 		{
 			"type": "both",
+			"name": "bookcase 1",
+			"model": "/models/bookcase/bookcase.json",
+			"position": [0, 0, -20],
+			"rotation": 0,
+			"scale": 3
+		},
+		{
+			"type": "obstacle",
+			"name": "cup 1",
+			"model": "/models/cup/cup.json",
+			"position": [4, 13.5, -6],
+			"rotation": 0,
+			"scale": 0.4
+		},
+		{
+			"type": "both",
 			"name": "table 1",
 			"model": "/models/table/table.json",
 			"position": [0, 0, 0],
@@ -79,11 +95,11 @@
 		},
 		{
 			"type": "both",
-			"name": "table 2",
-			"model": "/models/table/table.json",
-			"position": [40, 0, 0],
-			"rotation": 45,
-			"scale": 3
+			"name": "desk 1",
+			"model": "/models/desk/desk.json",
+			"position": [30, 0, 0],
+			"rotation": 180,
+			"scale": 1
 		},
 		{
 			"type": "both",
@@ -105,10 +121,10 @@
 			"type": "ramp",
 			"name": "ramp 2",
 			"model": "/models/ramp/ramp.json",
-			"position": [42, 14, -10],
+			"position": [35, 9.7, -10],
 			"rotation": 0,
 			"scale": 1,
-			"boost": [0, 0.5, -0.75]
+			"boost": [0, 0.6, -0.75]
 		},
 		{
 			"type": "ramp",
@@ -137,36 +153,22 @@
 			"boost": [0, 0.5, 0.75]
 		},
 		{
-			"type": "surface",
-			"name": "ramp_surface_1",
-			"model": "/models/ramp/ramp.json",
-			"position": [5, 14, 10],
-			"rotation": -135,
-			"scale": 1
+			"type": "both",
+			"name": "spiral 1",
+			"model": "/models/spiral/spiral.json",
+			"position": [0, 0, 20],
+			"rotation": 0,
+			"scale": 3,
+			"receiveShadow": false
 		},
 		{
-			"type": "surface",
-			"name": "ramp_surface_2",
-			"model": "/models/ramp/ramp.json",
-			"position": [8.5, 15, 13.5],
-			"rotation": -135,
-			"scale": 1
-		},
-		{
-			"type": "surface",
-			"name": "ramp_surface_3",
-			"model": "/models/ramp/ramp.json",
-			"position": [12, 16, 17],
-			"rotation": -135,
-			"scale": 1
-		},
-		{
-			"type": "surface",
-			"name": "ramp_surface_4",
-			"model": "/models/ramp/ramp.json",
-			"position": [15.5, 17, 20.5],
-			"rotation": -135,
-			"scale": 1
+			"type": "obstacle",
+			"name": "tv 1",
+			"model": "/models/tv/tv.json",
+			"position": [38, 9, 8],
+			"rotation": -90,
+			"scale": 0.5,
+			"receiveShadow": false
 		}
 	],
 

@@ -150,8 +150,9 @@ MicroMachines.Loader = {
 						mesh.scale.set(object.scale, object.scale, object.scale);
 						mesh.position.fromArray(object.position);
 						mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad(object.rotation));
-						mesh.castShadow = true;
-						mesh.receiveShadow = true;
+
+						mesh.castShadow = object.castShadow !== undefined ? object.castShadow : true;
+						mesh.receiveShadow = object.receiveShadow !== undefined ? object.receiveShadow : true;
 
 						scene.add(mesh);
 
