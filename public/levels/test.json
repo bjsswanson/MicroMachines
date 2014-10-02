@@ -72,7 +72,7 @@
 			"type": "obstacle",
 			"name": "cup 1",
 			"model": "/models/cup/cup.json",
-			"position": [-6, 13.5, -6],
+			"position": [-8, 13.5, -6],
 			"rotation": 0,
 			"scale": 0.4
 		},
@@ -120,29 +120,12 @@
 		},
 		{
 			"type": "both",
-			"name": "table 4",
-			"model": "/models/table/table.json",
-			"position": [0, 0, -40],
-			"rotation": 45,
-			"scale": 3
-		},
-		{
-			"type": "ramp",
-			"name": "ramp 4",
-			"model": "/models/ramp/ramp.json",
-			"position": [0, 14, -30],
-			"rotation": 180,
-			"scale": 1,
-			"boost": [0, 0.5, 0.75]
-		},
-		{
-			"type": "both",
 			"name": "spiral 1",
 			"model": "/models/spiral/spiral.json",
 			"position": [0, 0, 20],
 			"rotation": 0,
 			"scale": 3,
-			"receiveShadow": false
+			"castShadow": false
 		},
 		{
 			"type": "obstacle",
@@ -175,7 +158,7 @@
 			"model": "/models/kettle/kettle.json",
 			"position": [8, 13.5, -7],
 			"rotation": 45,
-			"scale": 1.2
+			"scale": 2
 		},
 		{
 			"type": "both",
@@ -193,6 +176,23 @@
 			"rotation": 90,
 			"scale": 1,
 			"boost": [-0.75, 0.75, 0]
+		},
+		{
+			"type": "both",
+			"name": "oven 1",
+			"model": "/models/oven/oven.json",
+			"position": [0, 0, -35],
+			"rotation": -90,
+			"scale": 1.5
+		},
+		{
+			"type": "ramp",
+			"name": "ramp 4",
+			"model": "/models/ramp/ramp.json",
+			"position": [0, 8.5, -28],
+			"rotation": 180,
+			"scale": 1,
+			"boost": [0, 0.6, 0.75]
 		}
 ],
 

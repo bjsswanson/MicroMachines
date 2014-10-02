@@ -22,7 +22,6 @@
 	"colorAmbient" : [0.5, 0.5, 0.5],
 	"colorDiffuse" : [0.5, 0.5, 0.5],
 	"illumination" : 4,
-	"mapBump" : "sofa_bump.png -bm 0.1",
 	"mapDiffuse" : "sofa.png",
 	"opticalDensity" : 1.0
 	}],
