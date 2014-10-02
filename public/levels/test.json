@@ -72,7 +72,7 @@
 			"type": "obstacle",
 			"name": "cup 1",
 			"model": "/models/cup/cup.json",
-			"position": [4, 13.5, -6],
+			"position": [-6, 13.5, -6],
 			"rotation": 0,
 			"scale": 0.4
 		},
@@ -110,14 +110,6 @@
 			"scale": 3
 		},
 		{
-			"type": "both",
-			"name": "table 3",
-			"model": "/models/table/table.json",
-			"position": [40, 0, -40],
-			"rotation": 0,
-			"scale": 3
-		},
-		{
 			"type": "ramp",
 			"name": "ramp 2",
 			"model": "/models/ramp/ramp.json",
@@ -125,15 +117,6 @@
 			"rotation": 0,
 			"scale": 1,
 			"boost": [0, 0.6, -0.75]
-		},
-		{
-			"type": "ramp",
-			"name": "ramp 3",
-			"model": "/models/ramp/ramp.json",
-			"position": [30, 14, -40],
-			"rotation": 90,
-			"scale": 1,
-			"boost": [-0.75, 0.5, 0]
 		},
 		{
 			"type": "both",
@@ -169,8 +152,49 @@
 			"rotation": -90,
 			"scale": 0.5,
 			"receiveShadow": false
+		},
+		{
+			"type": "obstacle",
+			"name": "plateKnifeFork 1",
+			"model": "/models/kitchen/plateKnifeFork/plateKnifeFork.json",
+			"position": [-8, 13.5, 0],
+			"rotation": -90,
+			"scale": 0.4
+		},
+		{
+			"type": "both",
+			"name": "officeChair 1",
+			"model": "/models/officeChair/officeChair.json",
+			"position": [30, 0, 4],
+			"rotation": 90,
+			"scale": 1.2
+		},
+		{
+			"type": "obstacle",
+			"name": "kettle 1",
+			"model": "/models/kettle/kettle.json",
+			"position": [8, 13.5, -7],
+			"rotation": 45,
+			"scale": 1.2
+		},
+		{
+			"type": "both",
+			"name": "sofa 1",
+			"model": "/models/sofa/sofa.json",
+			"position": [35, 0, -40],
+			"rotation": 215,
+			"scale": 2
+		},
+		{
+			"type": "ramp",
+			"name": "ramp 3",
+			"model": "/models/ramp/ramp.json",
+			"position": [28, 7.3, -40],
+			"rotation": 90,
+			"scale": 1,
+			"boost": [-0.75, 0.75, 0]
 		}
-	],
+],
 
 	"waypoints": [
 		{
