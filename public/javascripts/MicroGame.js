@@ -11,13 +11,13 @@ var world = {
 }
 
 MicroMachines.Loader.load("/levels/test.json", world, function(){
-	animate();
+	requestAnimationFrame( animate );
 });
 
 function animate() {
-	requestAnimationFrame( animate );
 	update();
 	renderer.render(scene, camera);
+	requestAnimationFrame( animate );
 }
 
 function update() {
@@ -46,11 +46,11 @@ function updateCamera( cars ){
 }
 
 function createCamera() {
-	return new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 10000);
+	return new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 1000);
 }
 
 function createRenderer() {
-	var renderer = new THREE.WebGLRenderer({ antialiasing: true });
+	var renderer = new THREE.WebGLRenderer({ antialiasing: false });
 
 	renderer.setClearColor( 0xffffff, 1 );
 	renderer.setSize(window.innerWidth, window.innerHeight);

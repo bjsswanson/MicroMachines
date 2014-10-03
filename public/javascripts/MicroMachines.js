@@ -105,15 +105,13 @@ MicroMachines.Car.prototype = function() {
 	}
 
 	function handleRamps ( car, updateVelocity, ramps ){
-		var ramp;
 		for (var i in ramps) {
-			var intersect = downCollide(car, ramps[i].mesh, SURFACE_COLLISION_DISTANCE);
-			if (intersect) {
-				ramp = ramps[i];
-			}
-
-			if(ramp) {
-				car.velocity.fromArray(ramp.boost);
+			if (car.position.distanceTo(ramps[i].position) < COLLISION_CHECK_DISTANCE) {
+				var intersect = downCollide(car, ramps[i].mesh, SURFACE_COLLISION_DISTANCE);
+				if (intersect) {
+					car.velocity.fromArray(ramps[i].boost);
+					break;
+				}
 			}
 		}
 	}
@@ -344,6 +342,7 @@ MicroMachines.Surface.prototype = function() {
 
 MicroMachines.Ramp = function ( mesh, boost ) {
 	this.mesh = mesh;
+	this.position = mesh.position;
 	this.boost = boost;
 }
 

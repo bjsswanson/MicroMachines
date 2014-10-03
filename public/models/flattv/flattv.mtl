@@ -1,0 +1,49 @@
+newmtl LCDFBXASC032ScreenSG
+illum 4
+Kd 0.01 0.01 0.01
+Ka 0.01 0.01 0.01
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.54 0.54 0.54
+Ns 0.00
+newmtl StandFBXASC032BaseSG
+illum 4
+Kd 0.01 0.01 0.01
+Ka 0.01 0.01 0.01
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.09 0.09 0.09
+Ns 0.00
+newmtl StandFBXASC032ChromeSG
+illum 4
+Kd 0.07 0.07 0.07
+Ka 0.07 0.07 0.07
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.90 0.90 0.90
+Ns 179.02
+newmtl StandFBXASC032MountSG
+illum 4
+Kd 0.04 0.04 0.04
+Ka 0.04 0.04 0.04
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.27 0.27 0.27
+Ns 2.00
+newmtl TVFBXASC032BezelSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.59 0.59 0.59
+Tf 1.00 1.00 1.00
+map_Kd Frame_diffuse.jpg
+bump Frame_bump.jpg -bm 0.01
+Ni 1.00
+Ks 0.90 0.90 0.90
+Ns 30.00
+newmtl lambert2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd flattv.png
+Ni 1.00

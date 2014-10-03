@@ -11,34 +11,10 @@
 		{
 			"type": "Directional",
 			"colour": "#fffff",
-			"position": [40, 100, 0],
-			"intensity": 0.2,
-			"shadowSize": 20,
-			"shadowMapSize": 512
-		},
-		{
-			"type": "Directional",
-			"colour": "#fffff",
-			"position": [0, 100, 0],
-			"intensity": 0.2,
-			"shadowSize": 20,
-			"shadowMapSize": 512
-		},
-		{
-			"type": "Directional",
-			"colour": "#fffff",
-			"position": [40, 100, -40],
-			"intensity": 0.2,
-			"shadowSize": 20,
-			"shadowMapSize": 512
-		},
-		{
-			"type": "Directional",
-			"colour": "#fffff",
-			"position": [0, 100, -40],
-			"intensity": 0.2,
-			"shadowSize": 20,
-			"shadowMapSize": 512
+			"position": [0, 500, 0],
+			"intensity": 1,
+			"shadowSize": 200,
+			"shadowMapSize": 4096
 		}
 	],
 
@@ -132,7 +108,7 @@
 			"name": "tv 1",
 			"model": "/models/tv/tv.json",
 			"position": [38, 9, 8],
-			"rotation": -90,
+			"rotation": -110,
 			"scale": 0.5,
 			"receiveShadow": false
 		},
@@ -193,6 +169,22 @@
 			"rotation": 180,
 			"scale": 1,
 			"boost": [0, 0.6, 0.75]
+		},
+		{
+			"type": "obstacle",
+			"name": "flattv 1",
+			"model": "/models/flattv/flattv.json",
+			"position": [0, 8, -50],
+			"rotation": 0,
+			"scale": 0.5
+		},
+		{
+			"type": "both",
+			"name": "coffee table 1",
+			"model": "/models/coffeeTable/coffeeTable.json",
+			"position": [15, 0, -40],
+			"rotation": 0,
+			"scale": 1
 		}
 ],
 
