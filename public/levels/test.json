@@ -25,16 +25,6 @@
 		"height": 200
 	},
 
-	"cars": [
-		{
-			"model": "/models/buggy/buggy.json",
-			"name": "car 1",
-			"position": [0, 30, 0],
-			"rotation": 90,
-			"scale": 0.2
-		}
-	],
-
 	"objects": [
 		{
 			"type": "both",
@@ -201,15 +191,13 @@
 			"type": "start",
 			"name": "Starting point",
 			"position": [0, 0, 0],
-			"rotation": 0,
-			"scale": 1
+			"rotation": 0
 		},
 		{
-			"type": "finsih",
+			"type": "finish",
 			"name": "Finishing point",
 			"position": [0, 0, -40],
-			"rotation": 45,
-			"scale": 1
+			"rotation": 45
 		}
 	]
 }

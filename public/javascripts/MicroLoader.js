@@ -1,12 +1,10 @@
 var MicroMachines = window.MicroMachines || {};
 
 MicroMachines.Loader = {
-	load: function( file, world, callback ) {
+	loadLevel: function( file, world, callback ) {
 		var jsonLoader = new THREE.JSONLoader();
 
 		var scene = world.scene;
-		var camera = world.camera;
-		var cars = world.cars || [];
 		var obstacles = world.obstacles || [];
 		var surfaces = world.surfaces || [];
 		var ramps = world.ramps || [];
@@ -14,17 +12,13 @@ MicroMachines.Loader = {
 		var models = {};
 
 		$.getJSON(file, function( data, status, xhr ){
-			loadCamera( data );
 			loadLights( data );
 			loadGround( data );
-			loadCarsAndObjects( data, callback );
+			loadWaypoints( data );
+			loadObjects( data, callback );
 		}).error(function(xhr, textStatus, error){
 			console.log(error);
 		});
-
-		function loadCamera( data ) {
-			camera.position.fromArray(data.camera.position);
-		};
 
 		function loadLights( data ) {
 			for(var i in data.lights){
@@ -68,9 +62,9 @@ MicroMachines.Loader = {
 
 			scene.add( plane );
 			surfaces.push(new MicroMachines.Surface( plane ));
-		}
+		};
 
-		function loadCarsAndObjects( data, callback ) {
+		function loadObjects( data, callback ) {
 			trackMeshes( data );
 			loadMeshes( data, callback )
 
@@ -97,7 +91,6 @@ MicroMachines.Loader = {
 							models[url] = { geometry: geometry, materials: materials};
 
 							if (finishedLoadingMeshes()) {
-								createCars( data );
 								createObjects( data, callback );
 							}
 						});
@@ -117,34 +110,13 @@ MicroMachines.Loader = {
 				return true;
 			}
 
-			function createCars( data ) {
-				for (var i in data.cars){
-					var car = data.cars[i];
-					if(car.model != undefined) {
-						var model = models[car.model];
-						var mesh = new THREE.Mesh(model.geometry, new THREE.MeshFaceMaterial(model.materials));
-
-						mesh.name = car.name;
-						mesh.position.fromArray(car.position);
-						mesh.scale.set(car.scale, car.scale, car.scale);
-						mesh.castShadow = true;
-
-						var microCar = new MicroMachines.Car(mesh);
-						microCar.setRotation(car.rotation)
-						microCar.init();
-
-						cars.push(microCar);
-						scene.add(mesh);
-					}
-				}
-			}
 
 			function createObjects( data, callback ) {
 				for (var i in data.objects) {
 					var object = data.objects[i];
 					if (object.model != undefined) {
 						var model = models[object.model];
-						var mesh = new THREE.Mesh(model.geometry, cloneMaterials()); //Might need to clone mesh in order to get transparent to work if the same object get used more than once
+						var mesh = new THREE.Mesh(model.geometry, cloneMaterials());
 
 						mesh.name = object.name;
 						mesh.scale.set(object.scale, object.scale, object.scale);
@@ -183,7 +155,45 @@ MicroMachines.Loader = {
 					}
 
 					return new THREE.MeshFaceMaterial(clonedMaterials);
-				}
+				};				
+			};			
+		};
+		
+		function loadWaypoints( data ) {
+			var waypoints = world.waypoints;				
+			//TODO Chloe: Need to load waypoints into the world.waypoints object. They should be in the data parameter above which is loaded from test.json
+		};
+	},
+	
+	loadCar: function( file, callback ){
+		var cars = world.cars || [];
+		
+		$.getJSON(file, function( data, status, xhr ){
+			loadCar( data, callback );
+		}).error(function(xhr, textStatus, error){
+			console.log(error);
+		});
+		
+		function loadCar( data, callback ) {
+			var jsonLoader = new THREE.JSONLoader();
+			if(data.model != undefined) {
+				jsonLoader.load(data.model, function (url, geometry, materials) {
+					var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+
+					mesh.name = data.name;
+					mesh.position.fromArray(data.position);
+					mesh.scale.set(data.scale, data.scale, data.scale);
+					mesh.castShadow = true;
+
+					var microCar = new MicroMachines.Car(mesh);
+					microCar.setRotation(data.rotation)
+					microCar.init();
+
+					cars.push(microCar);
+					scene.add(mesh);
+					
+					callback( microCar );
+				});
 			}
 		}
 	}

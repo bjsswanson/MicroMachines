@@ -1,0 +1,8 @@
+{	
+	"name": "car 1",
+	"model": "/models/buggy/buggy.json",
+	"scale": 0.2,
+	"position": [0, 30, 0],
+	"rotation": 90
+}
+

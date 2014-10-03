@@ -7,11 +7,14 @@ var world = {
 	cars: [],
 	surfaces: [],
 	obstacles: [],
-	ramps: []
+	ramps: [],
+	waypoints: []
 }
 
-MicroMachines.Loader.load("/levels/test.json", world, function(){
-	requestAnimationFrame( animate );
+MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
+	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){		
+		requestAnimationFrame( animate );
+	});	
 });
 
 function animate() {
@@ -31,14 +34,17 @@ function update() {
 
 	updateCamera( cars );
 
-	if (cars.length > 0) {
-		for (var i in obstacles) {
-			obstacles[i].update(camera, cars[0]); //this needs to work with multiple cars
+	for(var i in cars){
+		for (var j in obstacles) {
+			obstacles[j].update(camera, cars[i]);
 		}
 	}
 }
 
 function updateCamera( cars ){
+	//TODO Chloe: Camera needs to look at the average position of cars
+	//TODO Chloe: Camera needs to bias towards first place car (Need to figure out which car is first)
+	
 	if(cars.length > 0) {
 		camera.lookAt(cars[0].position); //this needs to work with multiple cars
 		camera.position.copy(cars[0].position.clone().add(new THREE.Vector3(-8, 16, 8)));
