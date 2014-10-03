@@ -185,6 +185,14 @@
 			"position": [15, 0, -40],
 			"rotation": 0,
 			"scale": 1
+		},
+		{
+			"type": "obstacle",
+			"name": "fridge 1",
+			"model": "/models/fridge/fridge.json",
+			"position": [15, 0, -30],
+			"rotation": -90,
+			"scale": 1
 		}
 ],
 
