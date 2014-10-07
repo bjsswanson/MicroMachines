@@ -13,7 +13,8 @@ var world = {
 
 MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
 	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
-	requestAnimationFrame( animate );	
+	requestAnimationFrame( animate );
+	setupGameSockets();
 });
 
 
@@ -78,4 +79,54 @@ function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+
+// Sockets configuration
+function setupGameSockets(){
+
+	var socket = io.connect();
+
+
+	// socket.emit('new game', { room: 'MicroMachines'}); 
+
+	socket.on('connect controller', function(data){
+
+		// console.log(data.username);
+
+
+		// TODO add car to scene, create key/value pair
+
+	});
+
+
+
+
+	socket.on('move car', function (data) {
+		console.log('move car');
+
+		// Move car
+		// var targetCar = 
+
+		var targetCar = world.cars[0].input; // Testing with default car for now
+		var moveDirection = data.direction;
+
+		if(moveDirection === 'forward'){
+			targetCar.left = false;
+			targetCar.right = false;
+			targetCar.forward = true;
+		} else if(moveDirection === 'left'){
+			targetCar.left = true;
+			targetCar.right = false;
+			targetCar.forward = false;
+		} else if(moveDirection === 'right'){
+			targetCar.left = false;
+			targetCar.right = true;
+			targetCar.forward = false;
+		} else {
+			targetCar.left = false;
+			targetCar.right = false;
+			targetCar.forward = false;
+		}
+	});
 }

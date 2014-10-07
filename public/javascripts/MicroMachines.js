@@ -247,15 +247,6 @@ MicroMachines.Car.prototype = function() {
 				case 40:
 					car.input.backwards = true;
 					break;
-				case 85:
-					localStorage.setItem('savedPosition', JSON.stringify(car.position));
-					console.log("Saved Position: ", car.position);
-					break;
-				case 80:
-					var sP = JSON.parse(localStorage.getItem('savedPosition'));
-					car.position.copy(sP);
-					console.log("Restored Position: ", sP);
-					break;
 			}
 		};
 
@@ -319,10 +310,7 @@ MicroMachines.Obstacle.prototype = function(){
 	}
 
 	function setOpacity( obstacle, opacity) {
-		var materials = obstacle.mesh.material.materials;
-		for(var i in materials){
-			materials[i].opacity = opacity;
-		}
+		obstacle.mesh.material.materials[0].opacity = opacity; //TODO: Needs updating for materials with multiple materials
 	}
 
 	return expose;
