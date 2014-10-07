@@ -33,7 +33,7 @@ function update() {
 		cars[i].update( world );
 	}
 
-	//updateCamera( cars );
+	updateCamera( cars );
 
 	for(var i in cars){
 		for (var j in obstacles) {

@@ -197,7 +197,7 @@ MicroMachines.PhoneController = (function(){
 
       console.log('connect');
 
-      socket = io.connect(); // TODO IP should not be static
+      socket = io.connect();
 
 
 
