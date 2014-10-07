@@ -103,13 +103,15 @@ function setupGameSockets(){
 
 
 	socket.on('move car', function (data) {
-		console.log('move car');
+		// console.log('move car');
 
 		// Move car
 		// var targetCar = 
 
 		var targetCar = world.cars[0].input; // Testing with default car for now
 		var moveDirection = data.direction;
+
+		// console.log(moveDirection);
 
 		if(moveDirection === 'forward'){
 			targetCar.left = false;
