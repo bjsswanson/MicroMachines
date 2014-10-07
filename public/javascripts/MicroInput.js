@@ -41,23 +41,18 @@ MicroMachines.PhoneController = (function(){
    var setEventListeners = function(){
       document.addEventListener('touchstart', onTouchStart);
 
-      $BTN_LEFT.off('touchstart.touchButton').on('touchstart.touchButton', function(e){
-         $BTN_LEFT.addClass('active');
+
+      $BTNS.off('touchstart.touchButton').on('touchstart.touchButton', function(e){
+         var $el = $(e.target);
+
+         $el.addClass('active');
       });
 
-      $BTN_RIGHT.off('touchstart.touchButton').on('touchstart.touchButton', function(e){
-         $BTN_RIGHT.addClass('active');
+      $BTNS.off('touchend.touchButton').on('touchend.touchButton', function(e){
+         var $el = $(e.target);
+
+         $el.removeClass('active');
       });
-
-
-      $BTN_LEFT.off('touchend.touchButton').on('touchend.touchButton', function(e){
-         $BTN_LEFT.removeClass('active');
-      });
-
-      $BTN_RIGHT.off('touchend.touchButton').on('touchend.touchButton', function(e){
-         $BTN_RIGHT.removeClass('active');
-      });
-
    };
 
    var removeEventListeners = function(){
@@ -93,7 +88,6 @@ MicroMachines.PhoneController = (function(){
          e.preventDefault();
 
          var usernameValue = $('.usernameInput').val();
-
          var usernameValueNoSpaces = usernameValue.replace(/\s/g, '');
 
          if(usernameValueNoSpaces.length){
