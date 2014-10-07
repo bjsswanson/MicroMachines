@@ -12,10 +12,10 @@ var world = {
 }
 
 MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
-	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){		
-		requestAnimationFrame( animate );
-	});	
+	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
+	requestAnimationFrame( animate );	
 });
+
 
 function animate() {
 	update();
@@ -32,7 +32,7 @@ function update() {
 		cars[i].update( world );
 	}
 
-	updateCamera( cars );
+	//updateCamera( cars );
 
 	for(var i in cars){
 		for (var j in obstacles) {
@@ -52,7 +52,10 @@ function updateCamera( cars ){
 }
 
 function createCamera() {
-	return new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.01, 1000);
+	var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+	camera.position.set(-8, 30, 8);
+	camera.lookAt(new THREE.Vector3(0, 0, -10));
+	return  camera;
 }
 
 function createRenderer() {

@@ -180,7 +180,7 @@ MicroMachines.Car.prototype = function() {
 
 	//Adds forward and back forces as well as turning the car
 	function handleInputForce( car ) {
-		if(car.input.forward) {
+		if(car.input.left && car.input.right) {
 			car.velocity.add(car.forward.clone().multiplyScalar(car.speed));
 		}
 
@@ -188,14 +188,14 @@ MicroMachines.Car.prototype = function() {
 			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed * BACKWARDS_MULTIPLIER));
 		}
 
-		if(car.input.left) {
+		if(car.input.left && !car.input.right) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad( TURN_ANGLE ));
-			car.forward.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( TURN_ANGLE )));
+			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( TURN_ANGLE )));
 		}
 
-		if(car.input.right) {
+		if(car.input.right && !car.input.left) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad(-TURN_ANGLE));
-			car.forward.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad(-TURN_ANGLE)));
+			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad(-TURN_ANGLE)));
 		}
 	}
 
