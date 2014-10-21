@@ -57,6 +57,18 @@ MicroMachines.Car.prototype = function() {
 
 		constructor: MicroMachines.Car,
 
+		setPosition: function( pos ) {
+			if( pos ){
+				if(Array.isArray(pos)) {
+					this.mesh.position.fromArray(pos);
+				} else if(pos instanceof THREE.Vector3){
+					this.mesh.position.copy(pos);
+				} else {
+					console.error("Unsupported position argument.");
+				}
+			}
+		},
+
 		setRotation: function ( angle ) {
 			this.mesh.rotation.x = 0;
 			this.mesh.rotation.y = 0;
@@ -67,9 +79,10 @@ MicroMachines.Car.prototype = function() {
 			return this;
 		},
 
-		reset: function (x, y, z) {
-			this.position.set(x, y, z);
-			this.setRotation( 0 );
+		reset: function (pos, angle) {
+			this.position.fromArray(pos);
+			this.setRotation( angle );
+			this.velocity = new THREE.Vector3();
 		},
 
 		init: function(){
@@ -97,10 +110,24 @@ MicroMachines.Car.prototype = function() {
 			handleRamps(car, updateVelocity, world.ramps);
 			handleCollisions(car, world.obstacles );
 			handleDrag( car );
+			handleWaypoints( car );
 
 			car.velocity.clamp(MIN_VELOCITY, MAX_VELOCITY);
 			updateVelocity.add(car.velocity);
 			car.position.add(updateVelocity);
+		}
+	}
+
+	function handleWaypoints ( car ) {
+		var nextWaypoint = world.nextWaypoint;
+
+		if(forwardCollide(car, nextWaypoint.mesh)){
+			world.prevWaypoint.mesh.material.color = new THREE.Color("red");
+			world.nextWaypoint.mesh.material.color = new THREE.Color("green");
+			world.prevWaypoint = nextWaypoint;
+			world.nextWaypoint = nextWaypoint.getNextWaypoint();
+
+			console.log("Next Waypoint is now: ", nextWaypoint);
 		}
 	}
 
@@ -180,7 +207,7 @@ MicroMachines.Car.prototype = function() {
 
 	//Adds forward and back forces as well as turning the car
 	function handleInputForce( car ) {
-		if(car.input.left && car.input.right) {
+		if(car.input.forward) {
 			car.velocity.add(car.forward.clone().multiplyScalar(car.speed));
 		}
 
@@ -188,12 +215,12 @@ MicroMachines.Car.prototype = function() {
 			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed * BACKWARDS_MULTIPLIER));
 		}
 
-		if(car.input.left && !car.input.right) {
+		if(car.input.left) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad( TURN_ANGLE ));
 			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( TURN_ANGLE )));
 		}
 
-		if(car.input.right && !car.input.left) {
+		if(car.input.right) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad(-TURN_ANGLE));
 			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad(-TURN_ANGLE)));
 		}
@@ -255,6 +282,9 @@ MicroMachines.Car.prototype = function() {
 					var sP = JSON.parse(localStorage.getItem('savedPosition'));
 					car.position.copy(sP);
 					console.log("Restored Position: ", sP);
+					break;
+				case 77:
+					world.prevWaypoint.resetCars();
 					break;
 			}
 		};
@@ -350,6 +380,58 @@ MicroMachines.Ramp.prototype = function() {
 	var expose = {
 		constructor: MicroMachines.Ramp
 	}
+
+	return expose;
+}();
+
+MicroMachines.WayPoint = function( index, positions, rotation, mesh ){
+	this.index = parseInt(index);
+	this.positions = positions;
+	this.rotation = rotation;
+	this.mesh = mesh;
+	this.position = mesh.position;
+	this.active = false;
+}
+
+MicroMachines.WayPoint.prototype = function() {
+	var expose = {
+		constructor: MicroMachines.WayPoint,
+
+		getClosestCar: function() {
+			var cars = world.cars;
+
+			var closestCar;
+			for(var i in world.cars){
+				var car = world.cars[i];
+				if(closestCar === undefined || this.position.distanceTo(car.position) < this.position.distanceTo(closestCar.position)){
+					closestCar = car;
+				}
+			}
+
+			return closestCar;
+		},
+
+		resetCars: function() {
+			var cars = world.cars;
+
+			for(var i in cars){
+				var car = cars[i];
+				var position = this.positions[i];
+				var rotation = this.rotation || 0;
+				if(position !== undefined){
+					car.reset(position, rotation);
+				}
+			}
+		},
+
+		getNextWaypoint: function() {
+			var waypoints = world.waypoints;
+			var nextIndex = this.index + 1 >= waypoints.length ? 0 : this.index + 1;
+			return waypoints[nextIndex];
+		}
+	};
+
+	// Put private methods in here (outside of expose)
 
 	return expose;
 }();

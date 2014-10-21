@@ -8,7 +8,9 @@ var world = {
 	surfaces: [],
 	obstacles: [],
 	ramps: [],
-	waypoints: []
+	waypoints: [],
+	prevWaypoint: undefined,
+	nextWaypoint: undefined
 }
 
 MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
@@ -32,7 +34,7 @@ function update() {
 		cars[i].update( world );
 	}
 
-	//updateCamera( cars );
+	updateCamera( cars );
 
 	for(var i in cars){
 		for (var j in obstacles) {
@@ -46,8 +48,9 @@ function updateCamera( cars ){
 	//TODO Chloe: Camera needs to bias towards first place car (Need to figure out which car is first)
 	
 	if(cars.length > 0) {
-		camera.lookAt(cars[0].position); //this needs to work with multiple cars
-		camera.position.copy(cars[0].position.clone().add(new THREE.Vector3(-8, 16, 8)));
+		var closestCar = world.nextWaypoint.getClosestCar();
+		camera.lookAt(closestCar.position); //this needs to work with multiple cars
+		camera.position.copy(closestCar.position.clone().add(new THREE.Vector3(-8, 16, 8)));
 	}
 }
 

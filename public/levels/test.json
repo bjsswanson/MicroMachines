@@ -196,16 +196,64 @@
 
 	"waypoints": [
 		{
-			"type": "start",
-			"name": "Starting point",
-			"position": [0, 0, 0],
-			"rotation": 0
+			"trigger": {
+				"position": [5, 14, 0],
+				"width": 10,
+				"height": 5,
+				"rotation": 90
+			},
+			"positions": [
+				[5, 20, -3],
+				[5, 20, -1],
+				[5, 20, 1],
+				[5, 20, 3]
+			],
+			"rotation": 90
 		},
 		{
-			"type": "finish",
-			"name": "Finishing point",
-			"position": [0, 0, -40],
-			"rotation": 45
+			"trigger": {
+				"position": [35, 9, -6],
+				"width": 10,
+				"height": 5,
+				"rotation": 0
+			},
+			"positions": [
+				[33, 15, -6],
+				[34, 15, -6],
+				[35, 15, -6],
+				[36, 15, -6]
+			],
+			"rotation": 180
+		},
+		{
+			"trigger": {
+				"position": [32, 7, -40],
+				"width": 10,
+				"height": 5,
+				"rotation": 90
+			},
+			"positions": [
+				[32, 15, -42],
+				[32, 15, -40],
+				[32, 15, -38],
+				[32, 15, -36]
+			],
+			"rotation": 270
+		},
+		{
+			"trigger": {
+				"position": [0, 8, -32],
+				"width": 10,
+				"height": 5,
+				"rotation": 0
+			},
+			"positions": [
+				[-3, 15, -32],
+				[-1, 15, -32],
+				[1, 15, -32],
+				[3, 15, -32]
+			],
+			"rotation": 0
 		}
 	]
 }
