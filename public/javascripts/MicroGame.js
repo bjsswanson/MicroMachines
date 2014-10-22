@@ -15,8 +15,8 @@ var world = {
 
 MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
 
-	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
-	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
+	MicroMachines.Loader.loadCar("/cars/buggy_blue.json", function( car ){	});
+	MicroMachines.Loader.loadCar("/cars/buggy_red.json", function( car ){	});
 
 	requestAnimationFrame( animate );
 });
