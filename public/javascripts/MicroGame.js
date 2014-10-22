@@ -14,8 +14,11 @@ var world = {
 }
 
 MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
+
 	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
-	requestAnimationFrame( animate );	
+	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
+
+	requestAnimationFrame( animate );
 });
 
 
@@ -36,22 +39,59 @@ function update() {
 
 	updateCamera( cars );
 
-	for(var i in cars){
+	for(var i in cars) {
 		for (var j in obstacles) {
 			obstacles[j].update(camera, cars[i]);
 		}
 	}
+
+	gameplay( cars );
+}
+
+function gameplay( cars ) {
+	var closestCar = world.nextWaypoint.getClosestCar();
+	for(var i in cars) {
+		var distanceToLeader = closestCar.position.distanceTo(cars[i].position);
+		if(distanceToLeader > 40) {
+			decreaseScore( i );
+			world.prevWaypoint.resetCars();
+		}
+
+		if(cars[i].position.y < 2) {
+			decreaseScore( i );
+			world.prevWaypoint.resetCars();
+		}
+
+//		if(!cars[i].isVisible( world.camera )){
+//			world.prevWaypoint.resetCars();
+//		}
+	}
+}
+
+function decreaseScore( index ){
+	$(".player").eq(index).find('span:last').remove()
 }
 
 function updateCamera( cars ){
-	//TODO Chloe: Camera needs to look at the average position of cars
-	//TODO Chloe: Camera needs to bias towards first place car (Need to figure out which car is first)
-	
 	if(cars.length > 0) {
-		var closestCar = world.nextWaypoint.getClosestCar();
-		camera.lookAt(closestCar.position); //this needs to work with multiple cars
-		camera.position.copy(closestCar.position.clone().add(new THREE.Vector3(-8, 16, 8)));
+		var avgPos = calculateAveragePosition( cars );
+		camera.lookAt(avgPos);
+		//camera.position.copy(avgPos.clone().add(new THREE.Vector3(-8, 16, 8)));
+		camera.position.copy(avgPos.clone().add(new THREE.Vector3(-4, 16, 4)));
+		//camera.position.copy(avgPos.clone().add(new THREE.Vector3(-2, 16, 2)));
 	}
+}
+
+function calculateAveragePosition( cars ){
+	var weight = cars.length;
+	var closestCar = world.nextWaypoint.getClosestCar();
+	var avgPos = closestCar.position.clone().multiplyScalar(weight);
+
+	for(var i in cars) {
+		avgPos.add(cars[i].position);
+	}
+
+	return avgPos.divideScalar(cars.length + weight);
 }
 
 function createCamera() {

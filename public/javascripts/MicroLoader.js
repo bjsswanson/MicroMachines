@@ -208,9 +208,11 @@ MicroMachines.Loader = {
 					mesh.castShadow = true;
 
 					var microCar = new MicroMachines.Car(mesh);
-					microCar.setPosition(data.position);
-					microCar.setRotation(data.rotation)
 					microCar.init();
+					//microCar.setPosition(data.position);
+					//microCar.setRotation(data.rotation)
+					microCar.setPosition(world.prevWaypoint.positions[cars.length]);
+					microCar.setRotation(world.prevWaypoint.rotation)
 
 					cars.push(microCar);
 					scene.add(mesh);

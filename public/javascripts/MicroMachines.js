@@ -90,10 +90,10 @@ MicroMachines.Car.prototype = function() {
 		},
 
 		// This only checks if the center of the mesh is in view, not the whole mesh
-		isVisible: function( car, camera ) {
+		isVisible: function( camera ) {
 			var frustum = new THREE.Frustum();
 			frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
-			return frustum.containsPoint(car.position);
+			return frustum.containsPoint(this.position);
 		},
 
 		//Everything needed in the update cycle for a car should go here
@@ -259,8 +259,11 @@ MicroMachines.Car.prototype = function() {
 
 	//temporary keyboard input. This will probably not work with multiple cars
 	function handleInput( car ) {
-
+		var prevOnKeyDown = document.onkeydown;
 		document.onkeydown = function (e) {
+			if(prevOnKeyDown) {
+				prevOnKeyDown(e);
+			}
 			switch (e.keyCode) {
 				case 37:
 					car.input.left = true;
@@ -289,7 +292,12 @@ MicroMachines.Car.prototype = function() {
 			}
 		};
 
+
+		var prevOnKeyUp = document.onkeyup;
 		document.onkeyup = function (e) {
+			if(prevOnKeyUp) {
+				prevOnKeyUp(e);
+			}
 			switch (e.keyCode) {
 				case 37:
 					car.input.left = false;

@@ -11,3 +11,30 @@ body {
 	overflow: hidden;
 	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+
+.player {
+	position: absolute;
+	width:50px;
+	height: 500px;
+	z-index: 1;
+}
+
+.player span {
+	opacity: 0.2;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	background-color: red;
+	margin: 10px;
+	display: block;
+}
+
+.one {
+	top: 20px;
+	left: 20px;
+}
+
+.two {
+	top: 20px;
+	right: 20px;
+}
