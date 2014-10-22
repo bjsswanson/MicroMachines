@@ -12,6 +12,7 @@ $(function(){
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 	statsUpdate();
+	handleInput();
 
 	function statsUpdate() {
 		requestAnimationFrame( statsUpdate );
@@ -117,4 +118,93 @@ $(function(){
 
 		return "[" + arr[0] + ", " + arr[1] + ", " + arr[2] + "]";
 	}
+
+	function handleInput() {
+
+		document.onkeydown = function (e) {
+
+			var cars = world.cars;
+			var a = cars[0];
+			var b = cars[1];
+
+			switch (e.keyCode) {
+
+				case 37:
+					a.input.left = true;
+					break;
+				case 38:
+					a.input.forward = true;
+					break;
+				case 39:
+					a.input.right = true;
+					break;
+				case 40:
+					a.input.backwards = true;
+					break;
+
+				case 74:
+					b.input.left = true;
+					break;
+				case 73:
+					b.input.forward = true;
+					break;
+				case 76:
+					b.input.right = true;
+					break;
+				case 75:
+					b.input.backwards = true;
+					break;
+
+
+				case 85:
+					localStorage.setItem('savedPosition', JSON.stringify(car.position));
+					console.log("Saved Position: ", car.position);
+					break;
+				case 80:
+					var sP = JSON.parse(localStorage.getItem('savedPosition'));
+					car.position.copy(sP);
+					console.log("Restored Position: ", sP);
+					break;
+				case 77:
+					world.prevWaypoint.resetCars();
+					break;
+			}
+		};
+
+		document.onkeyup = function (e) {
+
+			var cars = world.cars;
+			var a = cars[0];
+			var b = cars[1];
+
+			switch (e.keyCode) {
+
+				case 37:
+					a.input.left = false;
+					break;
+				case 38:
+					a.input.forward = false;
+					break;
+				case 39:
+					a.input.right = false;
+					break;
+				case 40:
+					a.input.backwards = false;
+					break;
+
+				case 74:
+					b.input.left = false;
+					break;
+				case 73:
+					b.input.forward = false;
+					break;
+				case 76:
+					b.input.right = false;
+					break;
+				case 75:
+					b.input.backwards = false;
+					break;
+			}
+		};
+	};
 });

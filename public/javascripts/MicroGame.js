@@ -49,22 +49,32 @@ function update() {
 }
 
 function gameplay( cars ) {
-	var closestCar = world.nextWaypoint.getClosestCar();
 	for(var i in cars) {
-		var distanceToLeader = closestCar.position.distanceTo(cars[i].position);
-		if(distanceToLeader > 40) {
-			decreaseScore( i );
-			world.prevWaypoint.resetCars();
-		}
+		tooFarFromLeadCar(cars, i);
+		onGround(cars, i);
+		//notVisible(cars, i);
+	}
+}
 
-		if(cars[i].position.y < 2) {
-			decreaseScore( i );
-			world.prevWaypoint.resetCars();
-		}
+function tooFarFromLeadCar(cars, i) {
+	var closestCar = world.nextWaypoint.getClosestCar();
+	var distanceToLeader = closestCar.position.distanceTo(cars[i].position);
 
-//		if(!cars[i].isVisible( world.camera )){
-//			world.prevWaypoint.resetCars();
-//		}
+	if (distanceToLeader > 30) {
+		decreaseScore(i);
+		world.prevWaypoint.resetCars();
+	}
+}
+function onGround(cars, i) {
+	if (cars[i].position.y < 2) {
+		decreaseScore(i);
+		world.prevWaypoint.resetCars();
+	}
+}
+
+function notVisible(cars, i) {
+	if (!cars[i].isVisible(world.camera)) {
+		world.prevWaypoint.resetCars();
 	}
 }
 
@@ -84,14 +94,16 @@ function updateCamera( cars ){
 
 function calculateAveragePosition( cars ){
 	var weight = cars.length;
-	var closestCar = world.nextWaypoint.getClosestCar();
-	var avgPos = closestCar.position.clone().multiplyScalar(weight);
+	//var closestCar = world.nextWaypoint.getClosestCar();
+	//var avgPos = closestCar.position.clone().multiplyScalar(weight);
+	var avgPos = new THREE.Vector3();
 
 	for(var i in cars) {
 		avgPos.add(cars[i].position);
 	}
 
-	return avgPos.divideScalar(cars.length + weight);
+	//return avgPos.divideScalar(cars.length + weight);
+	return avgPos.divideScalar(cars.length);
 }
 
 function createCamera() {
