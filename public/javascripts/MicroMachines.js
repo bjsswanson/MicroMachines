@@ -126,8 +126,6 @@ MicroMachines.Car.prototype = function() {
 			world.nextWaypoint.mesh.material.color = new THREE.Color("green");
 			world.prevWaypoint = nextWaypoint;
 			world.nextWaypoint = nextWaypoint.getNextWaypoint();
-
-			console.log("Next Waypoint is now: ", nextWaypoint);
 		}
 	}
 
