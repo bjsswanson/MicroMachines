@@ -19,7 +19,7 @@ var TRANSPARENT = 0.5;
 var SOLID = 1;
 var COLLISION_CHECK_DISTANCE = 50;
 var BOUNCE = 0.05;
-var CAR_COLLISION = 0.3
+var CAR_COLLISION = 0.5
 
 MicroMachines.Car = function (mesh) {
 	this.mesh = mesh;
@@ -176,11 +176,18 @@ MicroMachines.Car.prototype = function () {
 			var other = cars[i];
 			if (car != other) {
 				if(car.position.distanceTo(other.position) < CAR_COLLISION){
-					var v = car.velocity.clone();
-					var oV = other.velocity.clone();
+					var v = car.velocity;
+					var oV = other.velocity;
+
+					var dir = other.position.clone().sub(car.position);
+					dir.multiplyScalar(BOUNCE);
 
 					var result = new THREE.Vector3().addVectors(v, oV);
-					//TODO: Work out resulting forces
+					result.normalize();
+					result.multiplyScalar(Math.max(v.length(), oV.length()));
+					result.sub(dir);
+
+					v.copy(result); //TODO: Understand how this works. Stop brute forcing physics till they work...
 				}
 			}
 		}
