@@ -4,9 +4,6 @@ var app = express();
 var port = 3000;
 var io = require('socket.io').listen(app.listen(port));
 
-
-var crypto = require('crypto');
-
 var expressHbs = require('express-handlebars');
 
 app.engine('hbs', expressHbs({extname:'hbs', defaultLayout:'main.hbs'}));
