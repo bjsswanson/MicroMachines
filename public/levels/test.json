@@ -85,15 +85,6 @@
 			"boost": [0, 0.6, -0.75]
 		},
 		{
-			"type": "both",
-			"name": "spiral 1",
-			"model": "/models/spiral/spiral.json",
-			"position": [0, 0, 20],
-			"rotation": 0,
-			"scale": 3,
-			"castShadow": false
-		},
-		{
 			"type": "obstacle",
 			"name": "tv 1",
 			"model": "/models/tv/tv.json",
@@ -196,16 +187,56 @@
 
 	"waypoints": [
 		{
-			"type": "start",
-			"name": "Starting point",
-			"position": [0, 0, 0],
-			"rotation": 0
+			"trigger": {
+				"position": [5, 14, 0],
+				"width": 10,
+				"height": 5,
+				"rotation": 90
+			},
+			"positions": [
+				[5, 20, -1],
+				[5, 20, 1]
+			],
+			"rotation": 90
 		},
 		{
-			"type": "finish",
-			"name": "Finishing point",
-			"position": [0, 0, -40],
-			"rotation": 45
+			"trigger": {
+				"position": [35, 9, -6],
+				"width": 10,
+				"height": 5,
+				"rotation": 0
+			},
+			"positions": [
+				[34, 15, -6],
+				[35, 15, -6]
+			],
+			"rotation": 180
+		},
+		{
+			"trigger": {
+				"position": [32, 7, -40],
+				"width": 10,
+				"height": 5,
+				"rotation": 90
+			},
+			"positions": [
+				[32, 15, -40],
+				[32, 15, -38]
+			],
+			"rotation": 270
+		},
+		{
+			"trigger": {
+				"position": [0, 8, -32],
+				"width": 10,
+				"height": 5,
+				"rotation": 0
+			},
+			"positions": [
+				[-1, 15, -32],
+				[1, 15, -32]
+			],
+			"rotation": 0
 		}
 	]
 }

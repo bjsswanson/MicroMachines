@@ -19,8 +19,9 @@ var TRANSPARENT = 0.5;
 var SOLID = 1;
 var COLLISION_CHECK_DISTANCE = 50;
 var BOUNCE = 0.05;
+var CAR_COLLISION = 0.5
 
-MicroMachines.Car = function ( mesh ) {
+MicroMachines.Car = function (mesh) {
 	this.mesh = mesh;
 	this.mesh.castShadow = true;
 	this.mesh.receiveShadow = true;
@@ -51,52 +52,67 @@ MicroMachines.Car = function ( mesh ) {
 	}
 };
 
-MicroMachines.Car.prototype = function() {
+MicroMachines.Car.prototype = function () {
 
 	var expose = {
 
 		constructor: MicroMachines.Car,
 
-		setRotation: function ( angle ) {
+		setPosition: function (pos) {
+			if (pos) {
+				if (Array.isArray(pos)) {
+					this.mesh.position.fromArray(pos);
+				} else if (pos instanceof THREE.Vector3) {
+					this.mesh.position.copy(pos);
+				} else {
+					console.error("Unsupported position argument.");
+				}
+			}
+		},
+
+		setRotation: function (angle) {
 			this.mesh.rotation.x = 0;
 			this.mesh.rotation.y = 0;
 			this.mesh.rotation.z = 0;
-			this.mesh.rotateOnAxis(UP, THREE.Math.degToRad( angle ));
+			this.mesh.rotateOnAxis(UP, THREE.Math.degToRad(angle));
 			this.forward = FORWARD.clone();
-			this.forward.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( angle )));
+			this.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis(UP, THREE.Math.degToRad(angle)));
 			return this;
 		},
 
-		reset: function (x, y, z) {
-			this.position.set(x, y, z);
-			this.setRotation( 0 );
+		reset: function (pos, angle) {
+			this.position.fromArray(pos);
+			this.setRotation(angle);
+			this.velocity = new THREE.Vector3();
 		},
 
-		init: function(){
-			handleInput( this );
+		init: function () {
+
 		},
 
 		// This only checks if the center of the mesh is in view, not the whole mesh
-		isVisible: function( car, camera ) {
+		isVisible: function (camera) {
 			var frustum = new THREE.Frustum();
-			frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
-			return frustum.containsPoint(car.position);
+			frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+			return frustum.containsPoint(this.position);
 		},
 
 		//Everything needed in the update cycle for a car should go here
-		update: function ( world ) {
+		update: function (world) {
 			var car = this;
 
 			var updateVelocity = new THREE.Vector3();
 			handleSurfaces(car, updateVelocity, world.surfaces);
 
 			if (!car.floating) {
-				handleInputForce( car );
+				handleInputForce(car);
 			}
 
 			handleRamps(car, updateVelocity, world.ramps);
-			handleCollisions(car, world.obstacles );
-			handleDrag( car );
+			handleObstacleCollisions(car, world.obstacles);
+			handleCarCollisions(car, world.cars);
+			handleDrag(car);
+			handleWaypoints(car);
 
 			car.velocity.clamp(MIN_VELOCITY, MAX_VELOCITY);
 			updateVelocity.add(car.velocity);
@@ -104,7 +120,18 @@ MicroMachines.Car.prototype = function() {
 		}
 	}
 
-	function handleRamps ( car, updateVelocity, ramps ){
+	function handleWaypoints(car) {
+		var nextWaypoint = world.nextWaypoint;
+
+		if (forwardCollide(car, nextWaypoint.mesh)) {
+			world.prevWaypoint.mesh.material.color = new THREE.Color("red");
+			world.nextWaypoint.mesh.material.color = new THREE.Color("green");
+			world.prevWaypoint = nextWaypoint;
+			world.nextWaypoint = nextWaypoint.getNextWaypoint();
+		}
+	}
+
+	function handleRamps(car, updateVelocity, ramps) {
 		for (var i in ramps) {
 			if (car.position.distanceTo(ramps[i].position) < COLLISION_CHECK_DISTANCE) {
 				var intersect = downCollide(car, ramps[i].mesh, SURFACE_COLLISION_DISTANCE);
@@ -118,8 +145,8 @@ MicroMachines.Car.prototype = function() {
 
 	//Using intersect face normal to create more realistic collision when colliding at an angle (might be further improved with Vector3.reflect)
 	//May need to rule out some far away objects first with distance check, no need to raycast against objects that aren't nearby
-	function handleCollisions( car, obstacles) {
-		for(var i in obstacles) {
+	function handleObstacleCollisions(car, obstacles) {
+		for (var i in obstacles) {
 			var obstacle = obstacles[i];
 			if (car.position.distanceTo(obstacle.position) < COLLISION_CHECK_DISTANCE) { //No need to check against far away objects (Although this needs to take into account large objects)
 				var intersect = forwardCollide(car, obstacle.mesh);
@@ -127,7 +154,7 @@ MicroMachines.Car.prototype = function() {
 					var velocity = car.velocity.clone(); // Take the current velocity
 
 					var normal = intersect.face.normal.clone();
-					normal.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( obstacle.rotation ))); // Account for rotation of mesh
+					normal.applyMatrix4(new THREE.Matrix4().makeRotationAxis(UP, THREE.Math.degToRad(obstacle.rotation))); // Account for rotation of mesh
 
 					var normalVelocity = normal.clone(); //Create a vector in the direction of the normal
 					normalVelocity.multiply(absoluteVector(car.velocity));  //with the length (speed) of the current velocity
@@ -142,15 +169,37 @@ MicroMachines.Car.prototype = function() {
 				}
 			}
 		}
-	}
+	};
 
-	function absoluteVector( v ) {
+	function handleCarCollisions(car, cars) {
+		for (var i in cars) {
+			var other = cars[i];
+			if (car != other) {
+				if(car.position.distanceTo(other.position) < CAR_COLLISION){
+					var v = car.velocity;
+					var oV = other.velocity;
+
+					var dir = other.position.clone().sub(car.position);
+					dir.multiplyScalar(BOUNCE);
+
+					var result = new THREE.Vector3().addVectors(v, oV);
+					result.normalize();
+					result.multiplyScalar(Math.max(v.length(), oV.length()));
+					result.sub(dir);
+
+					v.copy(result); //TODO: Understand how this works. Stop brute forcing physics till they work...
+				}
+			}
+		}
+	};
+
+	function absoluteVector(v) {
 		return new THREE.Vector3(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z))
-	}
+	};
 
 	//Checks whether car is on a surface and adds gravity if not
 	//Currently doesn't handle ramps (would need to maintain distance from surface for ramps)
-	function handleSurfaces( car, updateVelocity, surfaces ) {
+	function handleSurfaces(car, updateVelocity, surfaces) {
 		//car.downRaycaster.set(car.position.clone().add(new THREE.Vector3(0, 0.1, 0)), DOWN); //WARNING: BREAKS FORWARD RAYCASTING
 
 		var onSurface;
@@ -174,28 +223,28 @@ MicroMachines.Car.prototype = function() {
 	};
 
 	//Add drag every update
-	function handleDrag( car ) {
-		car.velocity.sub( car.velocity.clone().multiplyScalar(car.drag) );
+	function handleDrag(car) {
+		car.velocity.sub(car.velocity.clone().multiplyScalar(car.drag));
 	}
 
 	//Adds forward and back forces as well as turning the car
-	function handleInputForce( car ) {
-		if(car.input.forward) {
+	function handleInputForce(car) {
+		if (car.input.forward) {
 			car.velocity.add(car.forward.clone().multiplyScalar(car.speed));
 		}
 
-		if(car.input.backwards) {
+		if (car.input.backwards) {
 			car.velocity.add(car.forward.clone().multiplyScalar(-car.speed * BACKWARDS_MULTIPLIER));
 		}
 
-		if(car.input.left) {
-			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad( TURN_ANGLE ));
-			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( TURN_ANGLE )));
+		if (car.input.left) {
+			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad(TURN_ANGLE));
+			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis(UP, THREE.Math.degToRad(TURN_ANGLE)));
 		}
 
-		if(car.input.right) {
+		if (car.input.right) {
 			car.mesh.rotateOnAxis(UP, THREE.Math.degToRad(-TURN_ANGLE));
-			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad(-TURN_ANGLE)));
+			car.forward.applyMatrix4(new THREE.Matrix4().makeRotationAxis(UP, THREE.Math.degToRad(-TURN_ANGLE)));
 		}
 	}
 
@@ -204,16 +253,16 @@ MicroMachines.Car.prototype = function() {
 	};
 
 	function forwardCollide(car, mesh) {
-		for(var i in car.colliders) {
+		for (var i in car.colliders) {
 			var collider = car.colliders[i];
 			var raycaster = collider.raycaster;
 			var clone = car.forward.clone();
 
 			//Update raycaster with current forward vector
-			raycaster.set(car.position, clone.applyMatrix4( new THREE.Matrix4().makeRotationAxis( UP, THREE.Math.degToRad( collider.angle ))));
+			raycaster.set(car.position, clone.applyMatrix4(new THREE.Matrix4().makeRotationAxis(UP, THREE.Math.degToRad(collider.angle))));
 
 			var intersect = collide(raycaster, mesh, collider.distance);
-			if(intersect) {
+			if (intersect) {
 				return intersect;
 			}
 		}
@@ -222,7 +271,7 @@ MicroMachines.Car.prototype = function() {
 	function collide(raycaster, mesh, distance) {
 		var intersects = raycaster.intersectObject(mesh);
 		if (intersects.length > 0) {
-			for(var i in intersects) {
+			for (var i in intersects) {
 				if (intersects[i].distance <= distance) {
 					return intersects[0];
 				}
@@ -230,49 +279,11 @@ MicroMachines.Car.prototype = function() {
 		}
 	};
 
-	//temporary keyboard input. This will probably not work with multiple cars
-	function handleInput( car ) {
-
-		document.onkeydown = function (e) {
-			switch (e.keyCode) {
-				case 37:
-					car.input.left = true;
-					break;
-				case 38:
-					car.input.forward = true;
-					break;
-				case 39:
-					car.input.right = true;
-					break;
-				case 40:
-					car.input.backwards = true;
-					break;
-			}
-		};
-
-		document.onkeyup = function (e) {
-			switch (e.keyCode) {
-				case 37:
-					car.input.left = false;
-					break;
-				case 38:
-					car.input.forward = false;
-					break;
-				case 39:
-					car.input.right = false;
-					break;
-				case 40:
-					car.input.backwards = false;
-					break;
-			}
-		};
-	}
-
 	return expose;
 }();
 
 
-MicroMachines.Obstacle = function ( mesh, rotation ) {
+MicroMachines.Obstacle = function (mesh, rotation) {
 	this.mesh = mesh;
 	this.position = mesh.position;
 	this.rotation = rotation;
@@ -280,19 +291,19 @@ MicroMachines.Obstacle = function ( mesh, rotation ) {
 	this.cameraRaycaster = new THREE.Raycaster();
 };
 
-MicroMachines.Obstacle.prototype = function(){
+MicroMachines.Obstacle.prototype = function () {
 	var expose = {
 		constructor: MicroMachines.Obstacle,
 
-		update: function( camera, car ) {
+		update: function (camera, car) {
 			var obstacle = this;
-			transparent( obstacle, camera, car );
+			transparent(obstacle, camera, car);
 		}
 	}
 
 	//Makes obstacle go transparent if it obstructs the view of a car
 	//Needs updating to support multiple cars.
-	function transparent( obstacle, camera, car ) {
+	function transparent(obstacle, camera, car) {
 		obstacle.cameraRaycaster.ray.origin = camera.position;
 		obstacle.cameraRaycaster.ray.direction = car.position.clone().sub(camera.position).normalize();
 
@@ -309,18 +320,21 @@ MicroMachines.Obstacle.prototype = function(){
 		}
 	}
 
-	function setOpacity( obstacle, opacity) {
-		obstacle.mesh.material.materials[0].opacity = opacity; //TODO: Needs updating for materials with multiple materials
+	function setOpacity(obstacle, opacity) {
+		var materials = obstacle.mesh.material.materials;
+		for (var i in materials) {
+			materials[i].opacity = opacity;
+		}
 	}
 
 	return expose;
 }();
 
-MicroMachines.Surface = function ( mesh ) {
+MicroMachines.Surface = function (mesh) {
 	this.mesh = mesh;
 };
 
-MicroMachines.Surface.prototype = function() {
+MicroMachines.Surface.prototype = function () {
 	var expose = {
 		constructor: MicroMachines.Surface
 	}
@@ -328,16 +342,68 @@ MicroMachines.Surface.prototype = function() {
 	return expose;
 }();
 
-MicroMachines.Ramp = function ( mesh, boost ) {
+MicroMachines.Ramp = function (mesh, boost) {
 	this.mesh = mesh;
 	this.position = mesh.position;
 	this.boost = boost;
 }
 
-MicroMachines.Ramp.prototype = function() {
+MicroMachines.Ramp.prototype = function () {
 	var expose = {
 		constructor: MicroMachines.Ramp
 	}
+
+	return expose;
+}();
+
+MicroMachines.WayPoint = function (index, positions, rotation, mesh) {
+	this.index = parseInt(index);
+	this.positions = positions;
+	this.rotation = rotation;
+	this.mesh = mesh;
+	this.position = mesh.position;
+	this.active = false;
+}
+
+MicroMachines.WayPoint.prototype = function () {
+	var expose = {
+		constructor: MicroMachines.WayPoint,
+
+		getClosestCar: function () {
+			var cars = world.cars;
+
+			var closestCar;
+			for (var i in world.cars) {
+				var car = world.cars[i];
+				if (closestCar === undefined || this.position.distanceTo(car.position) < this.position.distanceTo(closestCar.position)) {
+					closestCar = car;
+				}
+			}
+
+			return closestCar;
+		},
+
+		resetCars: function () {
+			var cars = world.cars;
+
+			for (var i in cars) {
+				var car = cars[i];
+				var position = this.positions[i];
+				var rotation = this.rotation || 0;
+				if (position !== undefined) {
+					car.reset(position, rotation);
+				}
+			}
+		},
+
+		getNextWaypoint: function () {
+			var waypoints = world.waypoints;
+			var nextIndex = this.index + 1 >= waypoints.length ? 0 : this.index + 1;
+			return waypoints[nextIndex];
+		}
+	};
+
+	// Put private methods in here (outside of expose)
 
 	return expose;
 }();

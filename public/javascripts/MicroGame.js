@@ -8,13 +8,13 @@ var world = {
 	surfaces: [],
 	obstacles: [],
 	ramps: [],
-	waypoints: []
-}
+	waypoints: [],
+	prevWaypoint: undefined,
+	nextWaypoint: undefined
+};
 
 MicroMachines.Loader.loadLevel("/levels/minimal.json", world, function(){
 	requestAnimationFrame( animate );
-
-	// MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
 
 	setupGameSockets();
 });
@@ -37,21 +37,71 @@ function update() {
 
 	updateCamera( cars );
 
-	for(var i in cars){
+	for(var i in cars) {
 		for (var j in obstacles) {
 			obstacles[j].update(camera, cars[i]);
 		}
 	}
+
+	gameplay( cars );
+}
+
+function gameplay( cars ) {
+	for(var i in cars) {
+		tooFarFromLeadCar(cars, i);
+		onGround(cars, i);
+		//notVisible(cars, i);
+	}
+}
+
+function tooFarFromLeadCar(cars, i) {
+	var closestCar = world.nextWaypoint.getClosestCar();
+	var distanceToLeader = closestCar.position.distanceTo(cars[i].position);
+
+	if (distanceToLeader > 30) {
+		decreaseScore(i);
+		world.prevWaypoint.resetCars();
+	}
+}
+function onGround(cars, i) {
+	if (cars[i].position.y < 2) {
+		decreaseScore(i);
+		world.prevWaypoint.resetCars();
+	}
+}
+
+function notVisible(cars, i) {
+	if (!cars[i].isVisible(world.camera)) {
+		world.prevWaypoint.resetCars();
+	}
+}
+
+function decreaseScore( index ){
+	$(".player").eq(index).find('span:last').remove()
 }
 
 function updateCamera( cars ){
-	//TODO Chloe: Camera needs to look at the average position of cars
-	//TODO Chloe: Camera needs to bias towards first place car (Need to figure out which car is first)
-	
 	if(cars.length > 0) {
-		camera.lookAt(cars[0].position); //this needs to work with multiple cars
-		camera.position.copy(cars[0].position.clone().add(new THREE.Vector3(-8, 16, 8)));
+		var avgPos = calculateAveragePosition( cars );
+		camera.lookAt(avgPos);
+		//camera.position.copy(avgPos.clone().add(new THREE.Vector3(-8, 16, 8)));
+		camera.position.copy(avgPos.clone().add(new THREE.Vector3(-4, 16, 4)));
+		//camera.position.copy(avgPos.clone().add(new THREE.Vector3(-2, 16, 2)));
 	}
+}
+
+function calculateAveragePosition( cars ){
+	var weight = cars.length;
+	//var closestCar = world.nextWaypoint.getClosestCar();
+	//var avgPos = closestCar.position.clone().multiplyScalar(weight);
+	var avgPos = new THREE.Vector3();
+
+	for(var i in cars) {
+		avgPos.add(cars[i].position);
+	}
+
+	//return avgPos.divideScalar(cars.length + weight);
+	return avgPos.divideScalar(cars.length);
 }
 
 function createCamera() {
@@ -100,7 +150,9 @@ function setupGameSockets(){
 	}
 
 	socket.on('add player', function(data){
-		MicroMachines.Loader.loadCar("/cars/testCar.json", function(car){
+		var CAR_SRC = world.cars.length % 2 ? '/cars/buggy_red.json' : '/cars/buggy_blue.json';
+
+		MicroMachines.Loader.loadCar(CAR_SRC, function(car){
 			var playerNumber = world.cars.indexOf(car);
 			var playerID = data.playerID;
 

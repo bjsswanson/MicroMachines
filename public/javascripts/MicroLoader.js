@@ -160,8 +160,31 @@ MicroMachines.Loader = {
 		};
 		
 		function loadWaypoints( data ) {
-			var waypoints = world.waypoints;				
-			//TODO Chloe: Need to load waypoints into the world.waypoints object. They should be in the data parameter above which is loaded from test.json
+			var waypoints = world.waypoints;
+
+			for(var i in data.waypoints){
+				var waypoint = data.waypoints[i];
+				var trigger = waypoint.trigger;
+
+				var geometry = new THREE.PlaneGeometry( trigger.width, trigger.height );
+				var material = new THREE.MeshBasicMaterial( {color: "red", side: THREE.DoubleSide} );
+				material.transparent = true;
+				material.opacity = 0.1;
+
+				var plane = new THREE.Mesh( geometry, material );
+
+				plane.position.fromArray(trigger.position);
+				plane.rotateOnAxis(new THREE.Vector3(0, 1, 0), THREE.Math.degToRad(trigger.rotation));
+
+				world.scene.add(plane);
+				waypoints.push(new MicroMachines.WayPoint(i, waypoint.positions, waypoint.rotation, plane));
+			}
+
+			if(waypoints) {
+				world.prevWaypoint = waypoints[0];
+				world.prevWaypoint.mesh.material.color = new THREE.Color("green");
+				world.nextWaypoint = waypoints[1];
+			}
 		};
 	},
 	
@@ -181,31 +204,31 @@ MicroMachines.Loader = {
 					var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 
 					mesh.name = data.name;
-					mesh.position.fromArray(data.position);
 					mesh.scale.set(data.scale, data.scale, data.scale);
 					mesh.castShadow = true;
 
 					var microCar = new MicroMachines.Car(mesh);
-					microCar.setRotation(data.rotation)
 					microCar.init();
+					//microCar.setPosition(data.position);
+					//microCar.setRotation(data.rotation)
+					microCar.setPosition(world.prevWaypoint.positions[cars.length]);
+					microCar.setRotation(world.prevWaypoint.rotation)
 
 					cars.push(microCar);
 					scene.add(mesh);
-					
+
 					callback( microCar );
 				});
 			}
 		}
 	},
 
-
 	removeCar: function( car ){
 		world.scene.remove(car.mesh);
+
 		var index = world.cars.indexOf(car);
-		
 		if(index > -1){
 			world.cars.splice(index, 1);
 		}
 	}
-
 }

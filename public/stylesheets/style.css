@@ -41,3 +41,37 @@ body {
 	background: orange;
 	right: 0;
 }
+
+.player {
+	position: absolute;
+	width:50px;
+	height: 500px;
+	z-index: 1;
+}
+
+.player span {
+	opacity: 0.4;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	margin: 10px;
+	display: block;
+}
+
+.one {
+	top: 20px;
+	left: 20px;
+}
+
+.one span {
+	background-color: blue;
+}
+
+.two {
+	top: 20px;
+	right: 20px;
+}
+
+.two span {
+	background-color: red;
+}
