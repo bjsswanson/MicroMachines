@@ -152,6 +152,9 @@ function setupGameSockets(){
 	socket.on('add player', function(data){
 		var CAR_SRC = world.cars.length % 2 ? '/cars/buggy_red.json' : '/cars/buggy_blue.json';
 
+
+		// TODO: restrict number of players / queuing logic
+
 		MicroMachines.Loader.loadCar(CAR_SRC, function(car){
 			var playerNumber = world.cars.indexOf(car);
 			var playerID = data.playerID;
