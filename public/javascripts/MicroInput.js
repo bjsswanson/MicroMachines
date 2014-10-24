@@ -5,6 +5,7 @@ MicroMachines.PhoneController = (function(){
    var $BTNS;
    var $BTN_LEFT;
    var $BTN_RIGHT;
+   var PLAYER_ID;
 
    var setDirection = function(){
       var BTN_LEFT_ACTIVE = $BTN_LEFT.hasClass('active');
@@ -23,7 +24,7 @@ MicroMachines.PhoneController = (function(){
          MOVE_CAR = 'none';
       }
 
-      socket.emit('move car', { 'direction': MOVE_CAR });
+      socket.emit('move car', { 'playerID': PLAYER_ID, 'direction': MOVE_CAR });
    };
 
    var onTouchEnd = function() {
@@ -41,7 +42,6 @@ MicroMachines.PhoneController = (function(){
    var setEventListeners = function(){
       document.addEventListener('touchstart', onTouchStart);
 
-
       $BTNS.off('touchstart.touchButton').on('touchstart.touchButton', function(e){
          var $el = $(e.target);
 
@@ -56,47 +56,49 @@ MicroMachines.PhoneController = (function(){
    };
 
    var removeEventListeners = function(){
-      // 
+      document.removeEventListener('touchstart', onTouchStart);
+
+      $BTNS.off('touchstart.touchButton');
+
+      $BTNS.off('touchend.touchButton');
    };
 
-   var connect = function(username, callback){
-      $('.usernamePrompt').removeClass('active');
-      $('.controller').addClass('active');
-
-      socket = io.connect();
-
-      socket.emit('connect controller', { username: username });
-
+   var disconnect = function(callback){
       if($.isFunction(callback)){
          callback();
       }
-
-
    };
 
-   var disconnect = function(){
-      // 
-   };
+   var connect = function(callback){
+      socket = io.connect();
 
+      socket.emit('connect controller', {});
+
+      socket.on('player added', function(data){
+         if(typeof PLAYER_ID === 'undefined'){
+            PLAYER_ID = data.playerID;
+
+            if($.isFunction(callback)){
+               callback();
+            }
+         }
+      });
+
+      socket.on('remove controller', function(data){
+         var REMOVED_PLAYER = data.playerID;
+
+         if(REMOVED_PLAYER === PLAYER_ID){
+            disconnect(removeEventListeners);
+         }
+      });
+   };
 
    var init = function(){
       $BTNS = $('.btn');
       $BTN_LEFT = $('.btnLeft');
       $BTN_RIGHT = $('.btnRight');
 
-      $('#joinGame').on('click', function(e){
-         e.preventDefault();
-
-         var usernameValue = $('.usernameInput').val();
-         var usernameValueNoSpaces = usernameValue.replace(/\s/g, '');
-
-         if(usernameValueNoSpaces.length){
-            connect(usernameValue, setEventListeners);
-         } else {
-            alert('please enter a username');
-         }
-
-      });
+      connect(setEventListeners);
    };
 
    return {

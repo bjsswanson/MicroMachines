@@ -11,9 +11,11 @@ var world = {
 	waypoints: []
 }
 
-MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
-	MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
+MicroMachines.Loader.loadLevel("/levels/minimal.json", world, function(){
 	requestAnimationFrame( animate );
+
+	// MicroMachines.Loader.loadCar("/cars/testCar.json", function( car ){	});
+
 	setupGameSockets();
 });
 
@@ -84,34 +86,36 @@ function onWindowResize() {
 
 // Sockets configuration
 function setupGameSockets(){
-
 	var socket = io.connect();
+	var activePlayers = {};
 
+	function updateActivePlayers(){
+		var PLAYER_COUNT = 0;
 
-	// socket.emit('new game', { room: 'MicroMachines'}); 
+		for(var key in activePlayers) {
+			activePlayers[key] = PLAYER_COUNT;
 
-	socket.on('connect controller', function(data){
+			PLAYER_COUNT++;
+		}
+	}
 
-		// console.log(data.username);
+	socket.on('add player', function(data){
+		MicroMachines.Loader.loadCar("/cars/testCar.json", function(car){
+			var playerNumber = world.cars.indexOf(car);
+			var playerID = data.playerID;
 
+			activePlayers[playerID] = playerNumber;
 
-		// TODO add car to scene, create key/value pair
-
+			socket.emit('player added', { playerID: playerID });
+		});
 	});
 
-
-
-
 	socket.on('move car', function (data) {
-		// console.log('move car');
-
 		// Move car
-		// var targetCar = 
-
-		var targetCar = world.cars[0].input; // Testing with default car for now
+		var playerID = data.playerID;
+		var playerIndex = activePlayers[playerID];
+		var targetCar = world.cars[playerIndex].input; // Testing with default car for now
 		var moveDirection = data.direction;
-
-		// console.log(moveDirection);
 
 		if(moveDirection === 'forward'){
 			targetCar.left = false;
@@ -131,4 +135,17 @@ function setupGameSockets(){
 			targetCar.forward = false;
 		}
 	});
+
+    socket.on('remove player', function(data){
+    	var playerID = data.playerID;
+		var carToRemove = activePlayers[playerID];
+
+		MicroMachines.Loader.removeCar(world.cars[carToRemove]);
+
+		delete activePlayers[playerID];
+
+		socket.emit('remove controller', { playerID: playerID });
+
+		updateActivePlayers();
+    });
 }

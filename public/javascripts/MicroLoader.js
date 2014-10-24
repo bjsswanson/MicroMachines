@@ -196,5 +196,16 @@ MicroMachines.Loader = {
 				});
 			}
 		}
+	},
+
+
+	removeCar: function( car ){
+		world.scene.remove(car.mesh);
+		var index = world.cars.indexOf(car);
+		
+		if(index > -1){
+			world.cars.splice(index, 1);
+		}
 	}
+
 }

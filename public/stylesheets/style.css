@@ -13,27 +13,10 @@ body {
 	margin: 0;
 }
 
-.usernamePrompt {
-	display: none;
-}
-
-.usernamePrompt.active {
-	display: block;
-}
-
-.usernameInput {
-
-}
-
 .controller {
-	display: none;
 	height: 100%;
 	position: relative;
 	width: 100%;
-}
-
-.controller.active {
-	display: block;
 }
 
 .btn {
