@@ -10,6 +10,36 @@ body {
 	background: #ffffff;
 	overflow: hidden;
 	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	margin: 0;
+}
+
+.controller {
+	height: 100%;
+	position: relative;
+	width: 100%;
+}
+
+.btn {
+	color: #ffffff;
+	height: 100%;
+	position: absolute;
+	text-align: center;
+	vertical-align: middle;
+	width: 50%;
+}
+
+.btn.active {
+	opacity: 0.5;
+}
+
+.btnLeft {
+	background: blue;
+	left: 0;
+}
+
+.btnRight {
+	background: orange;
+	right: 0;
 }
 
 .player {

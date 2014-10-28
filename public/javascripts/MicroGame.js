@@ -11,14 +11,12 @@ var world = {
 	waypoints: [],
 	prevWaypoint: undefined,
 	nextWaypoint: undefined
-}
+};
 
-MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
-
-	MicroMachines.Loader.loadCar("/cars/buggy_blue.json", function( car ){	});
-	MicroMachines.Loader.loadCar("/cars/buggy_red.json", function( car ){	});
-
+MicroMachines.Loader.loadLevel("/levels/minimal.json", world, function(){
 	requestAnimationFrame( animate );
+
+	setupGameSockets();
 });
 
 
@@ -133,4 +131,76 @@ function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+
+// Sockets configuration
+function setupGameSockets(){
+	var socket = io.connect();
+	var activePlayers = {};
+
+	function updateActivePlayers(){
+		var PLAYER_COUNT = 0;
+
+		for(var key in activePlayers) {
+			activePlayers[key] = PLAYER_COUNT;
+
+			PLAYER_COUNT++;
+		}
+	}
+
+	socket.on('add player', function(data){
+		var CAR_SRC = world.cars.length % 2 ? '/cars/buggy_red.json' : '/cars/buggy_blue.json';
+
+
+		// TODO: restrict number of players / queuing logic
+
+		MicroMachines.Loader.loadCar(CAR_SRC, function(car){
+			var playerNumber = world.cars.indexOf(car);
+			var playerID = data.playerID;
+
+			activePlayers[playerID] = playerNumber;
+
+			socket.emit('player added', { playerID: playerID });
+		});
+	});
+
+	socket.on('move car', function (data) {
+		// Move car
+		var playerID = data.playerID;
+		var playerIndex = activePlayers[playerID];
+		var targetCar = world.cars[playerIndex].input; // Testing with default car for now
+		var moveDirection = data.direction;
+
+		if(moveDirection === 'forward'){
+			targetCar.left = false;
+			targetCar.right = false;
+			targetCar.forward = true;
+		} else if(moveDirection === 'left'){
+			targetCar.left = true;
+			targetCar.right = false;
+			targetCar.forward = false;
+		} else if(moveDirection === 'right'){
+			targetCar.left = false;
+			targetCar.right = true;
+			targetCar.forward = false;
+		} else {
+			targetCar.left = false;
+			targetCar.right = false;
+			targetCar.forward = false;
+		}
+	});
+
+    socket.on('remove player', function(data){
+    	var playerID = data.playerID;
+		var carToRemove = activePlayers[playerID];
+
+		MicroMachines.Loader.removeCar(world.cars[carToRemove]);
+
+		delete activePlayers[playerID];
+
+		socket.emit('remove controller', { playerID: playerID });
+
+		updateActivePlayers();
+    });
 }
