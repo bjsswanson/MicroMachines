@@ -23,12 +23,12 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | ---- | ----------- | ------ | --------- |
 | Team Name | What's a team without a good name. (Personally I like "MegaMachines!") | All | N |
 | ThreeJS Tutorials | Everyone should familiarise themselves with ThreeJS as much as possible during the hack | All | N |
-| Core Library | Includes Car, Ground, Gravity, Collisions (Ground and Obstacles). I have started work refining the demo into a usable library. | Ben | Partial |
-| 3D Models | Create or Download | Ben | Partial |
+| Core Library | Includes Car, Ground, Gravity, Collisions (Ground and Obstacles). I have started work refining the demo into a usable library. | Ben | Y |
+| 3D Models | Create or Download | Ben/Chloe | Y |
 | Control | Mobile Websockets, Tap or Accelerometer | Pak | N |
-| Gameplay | Who's winning, are cars off screen? | Chloe | N |
-| Waypoints | If Cars go off screen, we need to be able to tell where to reset them | Chloe | N |
-| Camera | Where does the camera look (Lead Car? Average Position of all cars? | | N |
+| Gameplay | Who's winning, are cars off screen? | Ben | Y |
+| Waypoints | If Cars go off screen, we need to be able to tell where to reset them | Ben | Y |
+| Camera | Where does the camera look (Lead Car? Average Position of all cars? | Ben | Y |
 | Website Interface | | | N |
 | Logins | Player names | | N | 
 
@@ -36,12 +36,12 @@ Each Game Object has an update method to be run in the animation cycle on each f
 
 | Task | Description | Person | Complete? |
 | ---- | ----------- | ------ | --------- |
-| Level descriptor files | Postions of objects, etc, See ObjExporter.js in ThreeJS (could be adapted/used), Make sure to cache meshes for resuse | Ben | Partial |
+| Level descriptor files | Postions of objects, etc, See ObjExporter.js in ThreeJS (could be adapted/used), Make sure to cache meshes for resuse | Ben | Y |
 | Jumps | Ramps/Gravity/Physics | Ben | Y |
 | Physics | Knocking over stuff (PhysiJS) | | N |
-| Sound | SoundJS | | N | 
-| Loading/Preloading | 3D models and images | | N |
-| 1,2,3,Go | Prevent race start until all ready | | N |
+| Sound | SoundJS | | N  | 
+| Loading/Preloading | 3D models and images | Ben | Y |
+| 1,2,3,Go | Prevent race start until all ready | Ben | Partial |
 | Obstacle movement | (TweenJS) e.g. Pool table where balls move | | N |
 | High Scores | Leaderboards | | N |
 

@@ -19,7 +19,8 @@ var TRANSPARENT = 0.5;
 var SOLID = 1;
 var COLLISION_CHECK_DISTANCE = 50;
 var BOUNCE = 0.05;
-var CAR_COLLISION = 0.5
+var CAR_COLLISION = 1;
+var CAR_DAMPEN = 1;
 
 MicroMachines.Car = function (mesh) {
 	this.mesh = mesh;
@@ -32,10 +33,10 @@ MicroMachines.Car = function (mesh) {
 
 	//Be careful when updating raycasters because set changes the original values through the pointer.
 	this.colliders = [
-		{ angle: 0, distance: 0.5, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
-		{ angle: 45, distance: 0.3, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
-		{ angle: -45, distance: 0.3, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
-		{ angle: 180, distance: 0.5, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) }
+		{ angle: 0, distance: 0.8, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: 45, distance: 0.6, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: -45, distance: 0.6, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) },
+		{ angle: 180, distance: 0.8, raycaster: new THREE.Raycaster(this.position, new THREE.Vector3()) }
 	]
 
 	this.downRaycaster = new THREE.Raycaster(this.position, DOWN);
@@ -185,6 +186,7 @@ MicroMachines.Car.prototype = function () {
 					var result = new THREE.Vector3().addVectors(v, oV);
 					result.normalize();
 					result.multiplyScalar(Math.max(v.length(), oV.length()));
+					result.multiplyScalar(CAR_DAMPEN);
 					result.sub(dir);
 
 					v.copy(result); //TODO: Understand how this works. Stop brute forcing physics till they work...
