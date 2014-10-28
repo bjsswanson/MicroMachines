@@ -25,7 +25,7 @@ Each Game Object has an update method to be run in the animation cycle on each f
 | ThreeJS Tutorials | Everyone should familiarise themselves with ThreeJS as much as possible during the hack | All | N |
 | Core Library | Includes Car, Ground, Gravity, Collisions (Ground and Obstacles). I have started work refining the demo into a usable library. | Ben | Y |
 | 3D Models | Create or Download | Ben/Chloe | Y |
-| Control | Mobile Websockets, Tap or Accelerometer | Pak | N |
+| Control | Mobile Websockets, Tap or Accelerometer | Pak | Y |
 | Gameplay | Who's winning, are cars off screen? | Ben | Y |
 | Waypoints | If Cars go off screen, we need to be able to tell where to reset them | Ben | Y |
 | Camera | Where does the camera look (Lead Car? Average Position of all cars? | Ben | Y |
