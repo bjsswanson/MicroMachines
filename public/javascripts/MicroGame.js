@@ -13,7 +13,7 @@ var world = {
 	nextWaypoint: undefined
 };
 
-MicroMachines.Loader.loadLevel("/levels/minimal.json", world, function(){
+MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
 	requestAnimationFrame( animate );
 
 	setupGameSockets();
