@@ -17,7 +17,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 		<link rel="stylesheet" href="css/reveal.min.css">
-		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<link rel="stylesheet" href="css/theme/sky.css" id="theme">
 
 		<!-- For syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -45,8 +45,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>MicroMachines</h1>
-					<h3></h3>
+                    <img src="images/Micro_Machines_logo.png"/>
+					<!--<h1>Micro Machines</h1>-->
 					<p>
 						<small>Created by Ben Swanson, Pak Loon-Cheng and Chloe Kaian-Lam</small>
 					</p>
@@ -77,7 +77,7 @@
                         </a>
                     </section>
 					<section>
-						<h2>Node.JS</h2>
+						<h2>NodeJS</h2>
 						<p>Hosts the game, routes the player's web sockets and serves this presentation.</p>
 						<a href="http://nodejs.org" class="image">
 							<img width="300px" src="images/nodejs.png"/>
@@ -98,23 +98,27 @@
                 <section>
                     <section>
                         <h2>Physics</h2>
+                        <img height="300px" src="images/physics.jpg"/>
                         <p>All the physics are hand calculated in the animation cycle</p>
                     </section>
                     <section>
                         <h2>Collisions</h2>
                         <h4>Ray-casting</h4>
+                        <img height="300px" src="images/ray_cast.jpg"/>
                         <p>Ray-casting involves drawing a line in a particular direction and then seeing if the line intersects any meshes</p>
                         <p>Three.JS has this functionality built in.</p>
                     </section>
                     <section>
                         <h3>Pre-loading 3D models</h3>
                         <p>Three.JS has the ability to load specially converted 3d models</p>
+                        <img height="300px" src="images/preload.jpeg"/>
                         <p>Python script to convert wavefront .obj files into three.js json models</p>
                         <p>Callback passed to model loader did not recieve which model was loaded.
                         Just its geometry and materials.</p>
                     </section>
                     <section>
                         <h3>Web Sockets</h3>
+                        <img height="300px" src="images/socket.jpeg"/>
                         <p>Tying the opened socket to the game objects.</p>                        
                     </section>
                 </section>
