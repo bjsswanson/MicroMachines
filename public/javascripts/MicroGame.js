@@ -77,7 +77,28 @@ function notVisible(cars, i) {
 }
 
 function decreaseScore( index ){
-	$(".player").eq(index).find('span:last').remove()
+	var player = $(".player").eq(index);
+	$(player).find('span:last').remove()
+	var score = $(player).children().length;
+
+	if(score <= 0){
+		resetGame();
+	}
+}
+
+function resetGame() {
+	var players = $(".player");
+	for(var i in players){
+		var player = $(players).eq(i);
+		$(player).html("");
+		for(var j = 0; j < 5 ; j++){
+			player.append($("<span></span>"));
+		}
+	}
+
+	world.prevWaypoint = world.waypoints[0];
+	world.nextWaypoint = world.waypoints[1];
+	world.prevWaypoint.resetCars();
 }
 
 function updateCamera( cars ){

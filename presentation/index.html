@@ -51,78 +51,70 @@
 						<small>Created by Ben Swanson, Pak Loon-Cheng and Chloe Kaian-Lam</small>
 					</p>
 				</section>
-
 				<section>
 					<h1>Tech Stack</h1>
 				</section>
-
-				<!-- Example of nested vertical slides -->
-				<section>
-					<section>
-						<h2>Three.JS</h2>
-                        <h4>JavaScript 3D library</h4>
-						<p>
-                            The aim of the project is to create a lightweight 3D library with a very low level of complexity —
-                            in other words, for dummies. The library provides &lt;canvas&gt;, &lt;svg&gt;, CSS3D and WebGL renderers.
-						</p>
-                        <a href="http://threejs.org" class="image">
-                            <img width="300px" src="images/threejs-logo.png">
-                        </a>
-                    </section>
-					<section>
-						<h2>Socket.io</h2>
-						<p>Used to stream controls to each car from a mobile device.</p>
-                        <a href="http://socket.io" class="image">
-                            <img width="300px" src="images/socketio-logo.png">
-                        </a>
-                    </section>
-					<section>
-						<h2>NodeJS</h2>
-						<p>Hosts the game, routes the player's web sockets and serves this presentation.</p>
-						<a href="http://nodejs.org" class="image">
-							<img width="300px" src="images/nodejs.png"/>
-						</a>
-					</section>
-					<section>
-						<h2>Autodesk Maya</h2>
-						<h4>3D Modelling software</h4>
-                        <p>Many of the 3D models had to be re-sized, re-textured and have their number of polygons reduced</p>
-						<a href="http://www.autodesk.com" class="image">
-							<img width="300px" src="images/maya-logo.png">
-						</a>
-					</section>
-				</section>
+                <section>
+                    <h2>Three.JS</h2>
+                    <h4>JavaScript 3D library</h4>
+                    <p>
+                        The aim of the project is to create a lightweight 3D library with a very low level of complexity —
+                        in other words, for dummies. The library provides &lt;canvas&gt;, &lt;svg&gt;, CSS3D and WebGL renderers.
+                    </p>
+                    <a href="http://threejs.org" class="image">
+                        <img width="300px" src="images/threejs-logo.png">
+                    </a>
+                </section>
+                <section>
+                    <h2>Socket.io</h2>
+                    <p>Used to stream controls to each car from a mobile device.</p>
+                    <a href="http://socket.io" class="image">
+                        <img width="300px" src="images/socketio-logo.png">
+                    </a>
+                </section>
+                <section>
+                    <h2>NodeJS</h2>
+                    <p>Hosts the game, routes the player's web sockets and serves this presentation.</p>
+                    <a href="http://nodejs.org" class="image">
+                        <img width="300px" src="images/nodejs.png"/>
+                    </a>
+                </section>
+                <section>
+                    <h2>Autodesk Maya</h2>
+                    <h4>3D Modelling software</h4>
+                    <p>Many of the 3D models had to be re-sized, re-textured and have their number of polygons reduced</p>
+                    <a href="http://www.autodesk.com" class="image">
+                        <img width="300px" src="images/maya-logo.png">
+                    </a>
+                </section>
                 <section>
                     <h2>Tech Challenges</h2>
                 </section>
                 <section>
-                    <section>
-                        <h2>Physics</h2>
-                        <img height="300px" src="images/physics.jpg"/>
-                        <p>All the physics are hand calculated in the animation cycle</p>
-                    </section>
-                    <section>
-                        <h2>Collisions</h2>
-                        <h4>Ray-casting</h4>
-                        <img height="300px" src="images/ray_cast.jpg"/>
-                        <p>Ray-casting involves drawing a line in a particular direction and then seeing if the line intersects any meshes</p>
-                        <p>Three.JS has this functionality built in.</p>
-                    </section>
-                    <section>
-                        <h3>Pre-loading 3D models</h3>
-                        <p>Three.JS has the ability to load specially converted 3d models</p>
-                        <img height="300px" src="images/preload.jpeg"/>
-                        <p>Python script to convert wavefront .obj files into three.js json models</p>
-                        <p>Callback passed to model loader did not recieve which model was loaded.
-                        Just its geometry and materials.</p>
-                    </section>
-                    <section>
-                        <h3>Web Sockets</h3>
-                        <img height="300px" src="images/socket.jpeg"/>
-                        <p>Tying the opened socket to the game objects.</p>                        
-                    </section>
+                    <h2>Physics</h2>
+                    <img height="300px" src="images/physics.jpg"/>
+                    <p>All the physics are hand calculated in the animation cycle</p>
                 </section>
-
+                <section>
+                    <h2>Collisions</h2>
+                    <h4>Ray-casting</h4>
+                    <img height="300px" src="images/ray_cast.jpg"/>
+                    <p>Ray-casting involves drawing a line in a particular direction and then seeing if the line intersects any meshes</p>
+                    <p>Three.JS has this functionality built in.</p>
+                </section>
+                <section>
+                    <h3>Pre-loading 3D models</h3>
+                    <p>Three.JS has the ability to load specially converted 3D models</p>
+                    <img height="300px" src="images/preload.jpeg"/>
+                    <p>Python script to convert wavefront .obj files into three.js json models</p>
+                    <p>Callback passed to model loader did not receive which model was loaded.
+                    Just the geometry and materials.</p>
+                </section>
+                <section>
+                    <h3>Web Sockets</h3>
+                    <img height="300px" src="images/socket.jpeg"/>
+                    <p>Tying the opened socket to the game objects.</p>
+                </section>
                 <section>
                     <h3>Car input - Data model</h3>
                     <pre>
@@ -174,7 +166,7 @@ socket.on('move car', function (data) {
 				center: true,
 
 				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+				transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
 
 				// Parallax scrolling
 				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
