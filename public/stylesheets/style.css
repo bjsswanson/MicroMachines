@@ -20,6 +20,12 @@ body {
 }
 
 .btn {
+	-webkit-box-sizing: border-box; /* Android ≤ 2.3, iOS ≤ 4 */
+	box-sizing: border-box; /* Chrome, Firefox 29+, IE 8+, Opera, Safari 5.1 */
+	background: #40434c;
+	background-position: 50% 50%;
+	background-size: 25%;
+	background-repeat: no-repeat;
 	color: #ffffff;
 	height: 100%;
 	position: absolute;
@@ -29,16 +35,18 @@ body {
 }
 
 .btn.active {
-	opacity: 0.5;
+	opacity: 0.8;
 }
 
 .btnLeft {
-	background: blue;
+	background-image: url(/images/icon-left.png);
+	border-right: 5px solid #ffffff;
 	left: 0;
 }
 
 .btnRight {
-	background: orange;
+	background-image: url(/images/icon-right.png);
+	border-left: 5px solid #ffffff;
 	right: 0;
 }
 
