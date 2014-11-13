@@ -1,6 +1,7 @@
 {
 	"camera" : {
-		"position": [-10, 20, 10]
+		"position": [-8, 30, 8],
+		"lookAt": [0, 0, -10]
 	},
 
 	"lights": [

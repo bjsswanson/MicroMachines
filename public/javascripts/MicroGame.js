@@ -13,44 +13,39 @@ var world = {
 	nextWaypoint: undefined
 };
 
-MicroMachines.Loader.loadLevel("/levels/test.json", world, function(){
+var level = "/levels/test.json";
+MicroMachines.Loader.loadLevel(level, world, function(){
 	requestAnimationFrame( animate );
-
 	setupGameSockets();
 });
 
-
 function animate() {
 	update();
-	renderer.render(scene, camera);
+	renderer.render(world.scene, world.camera);
 	requestAnimationFrame( animate );
 }
 
 function update() {
 	var cars = world.cars;
 	var obstacles = world.obstacles;
-	var surfaces = world.surfaces;
 
-	for (var i in cars) {
-		cars[i].update( world );
-	}
-
+	updateCars( cars );
 	updateCamera( cars );
+	updateObstacles(cars, obstacles);
+}
 
-	for(var i in cars) {
+function updateCars(cars) {
+	for (var i in cars) {
+		cars[i].update(world);
+		tooFarFromLeadCar(cars, i);
+		onGround(cars, i);
+	}
+}
+function updateObstacles(cars, obstacles) {
+	for (var i in cars) {
 		for (var j in obstacles) {
 			obstacles[j].update(camera, cars[i]);
 		}
-	}
-
-	gameplay( cars );
-}
-
-function gameplay( cars ) {
-	for(var i in cars) {
-		tooFarFromLeadCar(cars, i);
-		onGround(cars, i);
-		//notVisible(cars, i);
 	}
 }
 
@@ -105,30 +100,22 @@ function updateCamera( cars ){
 	if(cars.length > 0) {
 		var avgPos = calculateAveragePosition( cars );
 		camera.lookAt(avgPos);
-		//camera.position.copy(avgPos.clone().add(new THREE.Vector3(-8, 16, 8)));
 		camera.position.copy(avgPos.clone().add(new THREE.Vector3(-4, 16, 4)));
-		//camera.position.copy(avgPos.clone().add(new THREE.Vector3(-2, 16, 2)));
 	}
 }
 
 function calculateAveragePosition( cars ){
-	var weight = cars.length;
-	//var closestCar = world.nextWaypoint.getClosestCar();
-	//var avgPos = closestCar.position.clone().multiplyScalar(weight);
 	var avgPos = new THREE.Vector3();
 
 	for(var i in cars) {
 		avgPos.add(cars[i].position);
 	}
 
-	//return avgPos.divideScalar(cars.length + weight);
 	return avgPos.divideScalar(cars.length);
 }
 
 function createCamera() {
 	var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
-	camera.position.set(-8, 30, 8);
-	camera.lookAt(new THREE.Vector3(0, 0, -10));
 	return  camera;
 }
 

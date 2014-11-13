@@ -12,6 +12,7 @@ MicroMachines.Loader = {
 		var models = {};
 
 		$.getJSON(file, function( data, status, xhr ){
+			loadCamera( data );
 			loadLights( data );
 			loadGround( data );
 			loadWaypoints( data );
@@ -19,6 +20,11 @@ MicroMachines.Loader = {
 		}).error(function(xhr, textStatus, error){
 			console.log(error);
 		});
+
+		function loadCamera( data ) {
+			world.camera.position.fromArray(data.camera.position);
+			world.camera.lookAt(new THREE.Vector3().fromArray(data.camera.lookAt));
+		}
 
 		function loadLights( data ) {
 			for(var i in data.lights){
@@ -209,8 +215,6 @@ MicroMachines.Loader = {
 
 					var microCar = new MicroMachines.Car(mesh);
 					microCar.init();
-					//microCar.setPosition(data.position);
-					//microCar.setRotation(data.rotation)
 					microCar.setPosition(world.prevWaypoint.positions[cars.length]);
 					microCar.setRotation(world.prevWaypoint.rotation)
 
@@ -229,6 +233,19 @@ MicroMachines.Loader = {
 		var index = world.cars.indexOf(car);
 		if(index > -1){
 			world.cars.splice(index, 1);
+		}
+	},
+
+	resetLevel: function( file ){
+		$.getJSON(file, function( data, status, xhr ){
+			resetCamera();
+		}).error(function(xhr, textStatus, error){
+			console.log(error);
+		});
+
+		function resetCamera() {
+			world.camera.position.fromArray(data.camera.position);
+			world.camera.lookAt(new THREE.Vector3().fromArray(data.camera.lookAt));
 		}
 	}
 }
