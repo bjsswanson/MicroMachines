@@ -16,32 +16,10 @@ app.get('/', function(req, res){
 });
 
 app.get('/player', function(req, res){
-  res.render('player', {layout: 'mobile.hbs'});
+  res.render('player', { layout: 'mobile.hbs' });
 });
 
 console.log('Listening on port ' + port);
 
-
-// sockets code
-io.sockets.on('connection', function(socket) {
-
-    socket.on('connect controller', function(data) {
-        io.sockets.emit('add player', { playerID: socket.id });
-    });
-
-    socket.on('player added', function(data) {
-        io.sockets.emit('player added', data);
-    });
-
-
-    socket.on('move car', function  (data) {
-        io.sockets.emit('move car', data);
-    });
-
-
-    socket.on('disconnect', function(data){
-        io.sockets.emit('remove player', { playerID: socket.id });
-    });
-
-
-});
+var MicroServer = require('./MicroServer')( io );
+MicroServer.init();

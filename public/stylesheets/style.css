@@ -83,3 +83,13 @@ body {
 .two span {
 	background-color: red;
 }
+
+#qrcode {
+	position: absolute;
+	right: 10;
+	bottom: 10;
+	width: 256px;
+	height: 256px;
+	z-index: 10;
+	overflow: hidden;
+}

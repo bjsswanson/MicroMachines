@@ -1,111 +1,64 @@
 var MicroMachines = window.MicroMachines || {};
 
-MicroMachines.PhoneController = (function(){
-   var socket;
-   var $BTNS;
-   var $BTN_LEFT;
-   var $BTN_RIGHT;
-   var PLAYER_ID;
+MicroMachines.MobileInput = function() {
+	var socket;
+	var buttons = $('.btn');
+	var leftButton = $('.btnLeft');
+	var rightButton = $('.btnRight');
+	var gameId = getUrlParameter('gameId');
 
-   var setDirection = function(){
-      var BTN_LEFT_ACTIVE = $BTN_LEFT.hasClass('active');
-      var BTN_RIGHT_ACTIVE = $BTN_RIGHT.hasClass('active');
-      var MOVE_CAR;
+	var expose = {
+		init: function(){
+			socket = io.connect();
+			if(gameId != undefined) {
+				socket.emit('add player', { gameId: gameId });
+				addEventListeners();
+			} else {
+				console.error('No game id');
+			}
+		}
+	};
 
-      if(BTN_LEFT_ACTIVE && BTN_RIGHT_ACTIVE){
-         MOVE_CAR = 'forward';
-      } else if(BTN_LEFT_ACTIVE || BTN_RIGHT_ACTIVE){
-         if(BTN_LEFT_ACTIVE){
-            MOVE_CAR = 'left';
-         } else if(BTN_RIGHT_ACTIVE){
-            MOVE_CAR = 'right';
-         }
-      } else {
-         MOVE_CAR = 'none';
-      }
+	function getUrlParameter( param ) {
+		var url = window.location.search.substring(1);
+		var params = url.split('&');
+		for (var i = 0; i < params.length; i++) {
+			var qParam = params[i].split('=');
+			if (qParam[0] == param) {
+				return qParam[1];
+			}
+		}
+	};
 
-      socket.emit('move car', { 'playerID': PLAYER_ID, 'direction': MOVE_CAR });
-   };
+	function addEventListeners(){
+		buttons.on('touchstart', function( e ){
+			var $el = $(e.target);
+			$el.addClass('active');
+			sendDirection();
+		});
 
-   var onTouchEnd = function() {
-      setDirection();
-   };
+		buttons.on('touchend', function( e ){
+			var $el = $(e.target);
+			$el.removeClass('active');
+			sendDirection();
+		});
+	};
 
+	function sendDirection() {
+		var leftPressed = leftButton.hasClass('active');
+		var rightPressed = rightButton.hasClass('active');
+		if(leftPressed && rightPressed){
+			socket.emit('move car', { gameId: gameId, direction: 'forward'})
+		} else if(leftPressed) {
+			socket.emit('move car', { gameId: gameId, direction: 'left'})
+		} else if(rightPressed) {
+			socket.emit('move car', { gameId: gameId, direction: 'right'})
+		} else {
+			socket.emit('move car', { gameId: gameId, direction: 'none'})
+		}
+	};
 
-   var onTouchStart = function(e) {
-      setDirection();
+	return expose;
+}();
 
-      document.addEventListener('touchend', onTouchEnd);
-   };
-
-
-   var setEventListeners = function(){
-      document.addEventListener('touchstart', onTouchStart);
-
-      $BTNS.off('touchstart.touchButton').on('touchstart.touchButton', function(e){
-         var $el = $(e.target);
-
-         $el.addClass('active');
-      });
-
-      $BTNS.off('touchend.touchButton').on('touchend.touchButton', function(e){
-         var $el = $(e.target);
-
-         $el.removeClass('active');
-      });
-   };
-
-   var removeEventListeners = function(){
-      document.removeEventListener('touchstart', onTouchStart);
-
-      $BTNS.off('touchstart.touchButton');
-
-      $BTNS.off('touchend.touchButton');
-   };
-
-   var disconnect = function(callback){
-      if($.isFunction(callback)){
-         callback();
-      }
-   };
-
-   var connect = function(callback){
-      socket = io.connect();
-
-      socket.emit('connect controller', {});
-
-      socket.on('player added', function(data){
-         if(typeof PLAYER_ID === 'undefined'){
-            PLAYER_ID = data.playerID;
-
-            if($.isFunction(callback)){
-               callback();
-            }
-         }
-      });
-
-      socket.on('remove controller', function(data){
-         var REMOVED_PLAYER = data.playerID;
-
-         if(REMOVED_PLAYER === PLAYER_ID){
-            disconnect(removeEventListeners);
-         }
-      });
-   };
-
-   var init = function(){
-      $BTNS = $('.btn');
-      $BTN_LEFT = $('.btnLeft');
-      $BTN_RIGHT = $('.btnRight');
-
-      connect(setEventListeners);
-   };
-
-   return {
-      init: init,
-      connect: connect,
-      disconnect: disconnect
-   };
-}());
-
-MicroMachines.PhoneController.init();
+MicroMachines.MobileInput.init();
