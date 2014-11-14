@@ -12,9 +12,11 @@ MicroMachines.MobileInput = function() {
 			socket = io.connect();
 			if(gameId != undefined) {
 				socket.emit('add player', { gameId: gameId });
-				addEventListeners();
+				addTouchListeners();
+				onDisconnect();
+				onNoGame()
 			} else {
-				console.error('No game id');
+				noGameId();
 			}
 		}
 	};
@@ -30,7 +32,7 @@ MicroMachines.MobileInput = function() {
 		}
 	};
 
-	function addEventListeners(){
+	function addTouchListeners(){
 		buttons.on('touchstart', function( e ){
 			var $el = $(e.target);
 			$el.addClass('active');
@@ -56,6 +58,22 @@ MicroMachines.MobileInput = function() {
 		} else {
 			socket.emit('move car', { gameId: gameId, direction: 'none'})
 		}
+	};
+
+	function onDisconnect() {
+		socket.on('disconnect', function(){
+			$('.controller').html('Thanks for playing!');
+		});
+	};
+
+	function onNoGame() {
+		socket.on('no game', function(){
+			$('.controller').html('There is no game with that id. Please scan the QR code to join.');
+		});
+	};
+
+	function noGameId() {
+		$('.controller').html('You have no gameId. Please scan the QR code to join.');
 	};
 
 	return expose;

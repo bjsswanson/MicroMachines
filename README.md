@@ -11,6 +11,7 @@ Current game objects include:
 | Obstacle | An obstacle is an object which can collide with the front of the car, currently bouncing back on collision |
 | Surface | An obstacle a car can drive across (e.g. the ground or a table) |
 | Ramp | An object that sets the cars velocity to a predefined value (Jumps). |
+| Waypoint | An object that contains information about the cars' progress. It has a plane which must be intersected to activate. A waypoint can reset the cars to a defined postion.
 
 Each Game Object has an update method to be run in the animation cycle on each frame.
 
@@ -122,3 +123,29 @@ This leaves us a map with all of the 3D models required for that level.
 
 Then the models are loaded asynchronously using THREE.js JSONLoader class.
 Once all the models are loaded, the cars, obstacles, surfaces and ramps are initialised using the meshes of the 3D models and a callback is function is run.
+
+### Waypoints
+
+Waypoints track the progress of the cars through the level. Each level descriptor file will contain a set of waypoints.
+
+Each waypoint has a plane that must be passed through by any car in order to activate it. (The plane will turn from red to green)
+If one of the cars falls off or falls too far behind then all the cars are reset to the current waypoint using a specified position for each car.
+
+```javascript
+{
+	"trigger": { 
+		"position": [5, 14, 0], //Position of the plane
+		"width": 10, //Width of the plane
+		"height": 5, //Height of the plane
+		"rotation": 90 //Rotation of trigger plane
+	},
+	"positions": [ //Positions for resetting the cars
+		[5, 20, -1], 
+		[5, 20, 1]
+	],
+	"rotation": 90 //Rotation to reset the cars to
+}
+```
+
+As each waypoint is passed through the next waypoint in the array is set in the **nextWaypoint** variable. 
+The car closest to the next waypoint is then determined to be in the lead. 
