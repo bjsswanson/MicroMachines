@@ -75,7 +75,7 @@ In the table below I will try to describe each force that applies to the car on 
 | Force | Force Type | Description |
 | ----- | ---------- | ----------- |
 | Gravity | updateVelocity | Only applied if the car is not in contact (less than 0.3 units) away from a surface, applied to updateVelocity instead of car.velocity so that gravity does not accumulate while in the air |
-| Input Force (from keyboard) | car.velocity | On each frame, if the key is held down and the car is on a surface then a directional force is applied. This force can accumulate over multiple updates until it hits the limit and is clamped. |
+| Input Force | car.velocity | On each frame, if the input button is held down and the car is on a surface then a directional force is applied. This force can accumulate over multiple updates until it hits the limit and is clamped. |
 | Drag | car.velocity | Drag is a fraction of car.velocity that is removed every update. This ensures that the car comes to a halt one the input keys are released. |
 | Collision | car.velocity | Explained in further detail below. Force is applied when colliding with an obstacle. Car velocity out of the collision is calculated and the current car.velocity is set to this value (rather than adding) |
 | Ramp.boost | car.velocity | When the car's down ray-caster touches the ramp, car.velocity is set to a predefined ramp velocity. This guarantees cars hitting the ramp will end up at the correct destination. Otherwise ramps become difficult to use and could be game breaking. | 
