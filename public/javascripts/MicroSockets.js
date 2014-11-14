@@ -70,13 +70,11 @@ MicroMachines.Input = function() {
 
 	function removePlayer() {
 		socket.on('remove player', function (data) {
-			var playerID = data.playerID;
-			var carToRemove = MicroMachines
+			var playerId = data.playerId;
+			var carToRemove = getPlayer(playerId).car;
 
-			MicroMachines.Loader.removeCar(world.cars[carToRemove]);
-			socket.emit('remove controller', { playerID: playerID });
-
-			updateActivePlayers();
+			MicroMachines.Loader.removeCar(carToRemove);
+			socket.emit('removed player', { playerId: playerId });
 		});
 	}
 
