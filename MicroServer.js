@@ -2,7 +2,8 @@ var MAX_PLAYERS = 2;
 var os = require('os');
 var MicroMachines = MicroMachines || {};
 
-MicroMachines.Games = [];
+MicroMachines.Games = {};
+MicroMachines.Players = {};
 
 MicroMachines.MicroServer = function(){
 	var expose = {
@@ -14,7 +15,8 @@ MicroMachines.MicroServer = function(){
 					MicroMachines.Games[socket.id] = {
 						id: socket.id,
 						socket: socket,
-						players: []
+						players: {},
+						numOfPlayers: 0
 					};
 					socket.emit('game started', { networkIp: getNetworkIP(), gameId: socket.id });
 				});
@@ -22,11 +24,19 @@ MicroMachines.MicroServer = function(){
 				socket.on('add player', function ( data ) {
 					var game = MicroMachines.Games[data.gameId];
 					if(game != undefined) {
-						if(game.players.length < MAX_PLAYERS) {
-							game.players.push({
+						if(game.numOfPlayers < MAX_PLAYERS) {
+
+							game.players[socket.id] = {
 								id: socket.id,
 								socket: socket
-							})
+							};
+
+							MicroMachines.Players[socket.id] = {
+								id: socket.id,
+								socket: socket,
+								gameId: game.id
+							};
+							game.numOfPlayers++;
 							game.socket.emit('add player', { playerId: socket.id});
 						}
 					} else {
@@ -49,7 +59,17 @@ MicroMachines.MicroServer = function(){
 						}
 						delete MicroMachines.Games[socket.id];
 					}
-					//remove players and then clean up empty games
+
+					var player = MicroMachines.Players[socket.id];
+					if(player != undefined) {
+						var game = MicroMachines.Games[player.gameId];
+						if(game != undefined) {
+							delete game.players[socket.id];
+							game.numOfPlayers--;
+							game.socket.emit('remove player', { playerId: socket.id });
+						}
+						delete MicroMachines.Players[socket.id];
+					}
 				});
 			});
 		}

@@ -8,6 +8,7 @@ MicroMachines.Input = function() {
 			gameStarted();
 			addPlayer();
 			moveCar();
+			removePlayer();
 			socket.emit('start game');
 		}
 	}
@@ -75,6 +76,10 @@ MicroMachines.Input = function() {
 
 			MicroMachines.Loader.removeCar(carToRemove);
 			socket.emit('removed player', { playerId: playerId });
+
+			if(world.cars.length < 2){
+				$('#qrcode').show();
+			}
 		});
 	}
 
