@@ -45,7 +45,6 @@ MicroMachines.MicroServer = function(){
 					var game = MicroMachines.Games[socket.id];
 					if(game != undefined) {
 						for(var i in game.players){
-							console.log(game.players[i].socket);
 							game.players[i].socket.disconnect();
 						}
 						delete MicroMachines.Games[socket.id];
