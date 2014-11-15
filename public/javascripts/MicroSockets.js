@@ -1,15 +1,27 @@
+var MAX_PLAYERS = 2;
+var SCORE = 5;
 var MicroMachines = window.MicroMachines || {};
 
 MicroMachines.Players = [];
 MicroMachines.Input = function() {
 	var socket = io.connect();
 	var expose = {
+		enabled: true,
 		init: function() {
 			gameStarted();
 			addPlayer();
 			moveCar();
 			removePlayer();
 			socket.emit('start game');
+		},
+		stop: function() {
+			for(var i in MicroMachines.Players){
+				var car = MicroMachines.Players[i].car;
+				var input = car.input;
+				input.forward = false;
+				input.left = false;
+				input.right = false;
+			}
 		}
 	}
 
@@ -25,7 +37,7 @@ MicroMachines.Input = function() {
 		socket.on('add player', function (data) {
 			var carModel = world.cars.length % 2 ? '/cars/buggy_red.json' : '/cars/buggy_blue.json';
 
-			if(world.cars.length < 2) {
+			if(world.cars.length < MAX_PLAYERS) {
 				MicroMachines.Loader.loadCar(carModel, function (car) {
 					MicroMachines.Players.push({
 						id: data.playerId,
@@ -34,6 +46,7 @@ MicroMachines.Input = function() {
 					
 					if(world.cars.length >= 2){
 						$('#qrcode').hide();
+						resetGame();
 					}
 				});
 			} else {
@@ -49,22 +62,24 @@ MicroMachines.Input = function() {
 			var input = car.input;
 			var moveDirection = data.direction;
 
-			if (moveDirection === 'forward') {
-				input.left = false;
-				input.right = false;
-				input.forward = true;
-			} else if (moveDirection === 'left') {
-				input.left = true;
-				input.right = false;
-				input.forward = false;
-			} else if (moveDirection === 'right') {
-				input.left = false;
-				input.right = true;
-				input.forward = false;
-			} else {
-				input.left = false;
-				input.right = false;
-				input.forward = false;
+			if(MicroMachines.Input.enabled) {
+				if (moveDirection === 'forward') {
+					input.left = false;
+					input.right = false;
+					input.forward = true;
+				} else if (moveDirection === 'left') {
+					input.left = true;
+					input.right = false;
+					input.forward = false;
+				} else if (moveDirection === 'right') {
+					input.left = false;
+					input.right = true;
+					input.forward = false;
+				} else {
+					input.left = false;
+					input.right = false;
+					input.forward = false;
+				}
 			}
 		});
 	};
@@ -81,7 +96,7 @@ MicroMachines.Input = function() {
 				$('#qrcode').show();
 			}
 		});
-	}
+	};
 
 	function getPlayer( id ){
 		for(var i in MicroMachines.Players){

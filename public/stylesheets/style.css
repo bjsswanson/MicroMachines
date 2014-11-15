@@ -95,3 +95,18 @@ body {
 	z-index: 10;
 	overflow: hidden;
 }
+
+.message {
+	left: 0;
+	margin: auto;
+	margin-top: -100px;
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	text-align: center;
+	font-size: 72px;
+	color: white;
+	text-shadow: 2px 2px 4px #000000;
+	z-index: 10;
+}
+

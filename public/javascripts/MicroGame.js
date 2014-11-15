@@ -1,3 +1,4 @@
+var MAX_PLAYERS = 2;
 var scene = new THREE.Scene();
 var camera = createCamera();
 var renderer = createRenderer();
@@ -76,10 +77,27 @@ function decreaseScore( index ){
 	$(player).find('span:last').remove()
 	var score = $(player).children().length;
 
+	//if(score <= 0 && world.cars.length >= MAX_PLAYERS){
 	if(score <= 0){
-		resetGame();
+		declareWinner();
 	}
 }
+
+function declareWinner(){
+	var pOne = $(".player.one").children().length;
+	var pTwo = $(".player.two").children().length;
+
+	var message = $('.message');
+	if(pOne > pTwo){
+		message.html("PLAYER ONE WINS!");
+	} else if(pTwo){
+		message.html("PLAYER TWO WINS!");
+	} else {
+		message.html("IT'S A DRAW! SOMEHOW...");
+	}
+
+	resetGame();
+};
 
 function resetGame() {
 	var players = $(".player");
@@ -94,6 +112,28 @@ function resetGame() {
 	world.prevWaypoint = world.waypoints[0];
 	world.nextWaypoint = world.waypoints[1];
 	world.prevWaypoint.resetCars();
+
+	MicroMachines.Input.enabled = false;
+	MicroMachines.Input.stop();
+	var message = $('.message');
+	message.fadeIn(2000, function() {
+		setTimeout(function(){
+			setTimeout(function() {
+				message.html("3");
+				setTimeout(function() {
+					message.html("2");
+					setTimeout(function(){
+						message.html("1");
+						setTimeout(function(){
+							MicroMachines.Input.enabled = true;
+							message.html('GO!');
+							message.fadeOut(2000, function() { });
+						}, 1000)
+					}, 1000)
+				}, 1000)
+			}, 1000);
+		}, 2000);
+	});
 }
 
 function updateCamera( cars ){
