@@ -77,8 +77,8 @@ function decreaseScore( index ){
 	$(player).find('span:last').remove()
 	var score = $(player).children().length;
 
-	//if(score <= 0 && world.cars.length >= MAX_PLAYERS){
-	if(score <= 0){
+	if(score <= 0 && world.cars.length >= MAX_PLAYERS){
+	//if(score <= 0){
 		declareWinner();
 	}
 }
