@@ -118,7 +118,7 @@ function resetGame() {
 	MicroMachines.Input.stop();
 	var message = $('.message');
 	var tween = createjs.Tween.get(message)
-		.call(function(){ message.show()}).wait(4000)
+		.call(function(){ message.show()}).wait(3000)
 		.call(function(){ message.html("3"); }).wait(1000)
 		.call(function(){ message.html("2"); }).wait(1000)
 		.call(function(){ message.html("1"); }).wait(1000)
