@@ -45,6 +45,8 @@ MicroMachines.Input = function() {
 					
 					if(world.cars.length >= 2){
 						$('#qrcode').hide();
+						var message = $('.message');
+						message.html("GET READY!");
 						resetGame();
 					}
 				});
