@@ -1,5 +1,4 @@
 var MAX_PLAYERS = 2;
-var SCORE = 5;
 var MicroMachines = window.MicroMachines || {};
 
 MicroMachines.Players = [];

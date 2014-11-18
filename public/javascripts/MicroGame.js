@@ -1,4 +1,5 @@
 var MAX_PLAYERS = 2;
+var MAX_SCORE = 5;
 var scene = new THREE.Scene();
 var camera = createCamera();
 var renderer = createRenderer();
@@ -78,7 +79,7 @@ function decreaseScore( index ){
 	var score = $(player).children().length;
 
 	if(score <= 0 && world.cars.length >= MAX_PLAYERS){
-	//if(score <= 0){
+//	if(score <= 0){
 		declareWinner();
 	}
 }
@@ -104,7 +105,7 @@ function resetGame() {
 	for(var i in players){
 		var player = $(players).eq(i);
 		$(player).html("");
-		for(var j = 0; j < 5 ; j++){
+		for(var j = 0; j < MAX_SCORE ; j++){
 			player.append($("<span></span>"));
 		}
 	}
@@ -116,24 +117,13 @@ function resetGame() {
 	MicroMachines.Input.enabled = false;
 	MicroMachines.Input.stop();
 	var message = $('.message');
-	message.fadeIn(2000, function() {
-		setTimeout(function(){
-			setTimeout(function() {
-				message.html("3");
-				setTimeout(function() {
-					message.html("2");
-					setTimeout(function(){
-						message.html("1");
-						setTimeout(function(){
-							MicroMachines.Input.enabled = true;
-							message.html('GO!');
-							message.fadeOut(2000, function() { });
-						}, 1000)
-					}, 1000)
-				}, 1000)
-			}, 1000);
-		}, 2000);
-	});
+	var tween = createjs.Tween.get(message)
+		.call(function(){ message.show()}).wait(4000)
+		.call(function(){ message.html("3"); }).wait(1000)
+		.call(function(){ message.html("2"); }).wait(1000)
+		.call(function(){ message.html("1"); }).wait(1000)
+		.call(function(){ message.html("GO!"); MicroMachines.Input.enabled = true; }).wait(2000)
+		.call(function(){ message.hide()});
 }
 
 function updateCamera( cars ){
